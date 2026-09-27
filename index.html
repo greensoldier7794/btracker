@@ -1406,7 +1406,6 @@ const App = {
         $('txForm').addEventListener('submit', e => {
             e.preventDefault();
             const splits = this.collectSplits();
-            if (splits === null) return; // validation error already toasted
             const data = {
                 type: $('txType').value,
                 amount: $('txAmount').value,
