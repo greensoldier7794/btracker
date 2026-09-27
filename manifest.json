@@ -1,0 +1,14 @@
+{
+  "name": "ZenBudget Pro",
+  "short_name": "ZenBudget",
+  "description": "Offline-first personal finance manager with cloud sync",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

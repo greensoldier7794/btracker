@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>ZenBudget Pro — Finance Manager</title>
+<style>
+:root {
+    --primary: #2563eb; --primary-dark: #1e40af;
+    --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #0891b2;
+    --bg-body: #f3f4f6; --bg-card: #ffffff; --bg-input: #ffffff;
+    --text-main: #1f2937; --text-muted: #6b7280; --border: #e5e7eb;
+    --radius: 8px;
+    --shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+    --blur-amount: 0px;
+}
+body.dark-mode {
+    --primary: #3b82f6; --primary-dark: #60a5fa;
+    --bg-body: #111827; --bg-card: #1f2937; --bg-input: #374151;
+    --text-main: #f3f4f6; --text-muted: #9ca3af; --border: #374151;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,.5);
+}
+body.privacy-mode { --blur-amount: 6px; }
+.private-data { filter: blur(var(--blur-amount)); transition: filter .3s; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { background: var(--bg-body); color: var(--text-main); line-height: 1.5; padding-bottom: 90px; transition: background-color .3s, color .3s; }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 1rem; }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.card { background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); transition: background-color .3s; }
+.flex { display: flex; align-items: center; }
+.flex-between { justify-content: space-between; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-1 { gap: .25rem; } .gap-2 { gap: .5rem; } .gap-3 { gap: .75rem; } .gap-4 { gap: 1rem; }
+.text-right { text-align: right; } .text-center { text-align: center; }
+.mt-2 { margin-top: .5rem; } .mt-4 { margin-top: 1rem; } .mb-2 { margin-bottom: .5rem; } .mb-4 { margin-bottom: 1rem; }
+.hidden { display: none !important; }
+
+h1, h2, h3, h4 { font-weight: 600; color: var(--text-main); }
+h1 { font-size: 1.5rem; } h2 { font-size: 1.25rem; } h3 { font-size: 1.1rem; } h4 { font-size: 1rem; }
+.text-sm { font-size: .875rem; color: var(--text-muted); }
+.text-xs { font-size: .75rem; color: var(--text-muted); }
+.text-xl { font-size: 1.5rem; font-weight: 700; }
+.text-3xl { font-size: 2.25rem; font-weight: 700; }
+.text-success { color: var(--success); } .text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); } .text-info { color: var(--info); }
+
+button, .btn { cursor: pointer; padding: .5rem 1rem; border-radius: var(--radius); border: none; font-weight: 500; transition: all .2s; font-size: .9rem; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+.btn-outline:hover { background: var(--bg-body); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-info { background: var(--info); color: #fff; }
+.btn-sm { padding: .25rem .6rem; font-size: .8rem; }
+
+input, select, textarea {
+    width: 100%; padding: .6rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem;
+    background: var(--bg-input); color: var(--text-main); transition: background .3s, color .3s;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+label { display: inline-block; }
+
+.date-filter-bar { background: var(--bg-card); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid var(--border); }
+.preset-buttons { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.preset-buttons button { font-size: .85rem; padding: .4rem .8rem; }
+.preset-buttons button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+header { background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; transition: background-color .3s; }
+nav { display: flex; gap: .5rem; overflow-x: auto; padding-top: 1rem; }
+.nav-item { padding: .5rem 1rem; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-muted); white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; font-size: .95rem; }
+.nav-item.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }
+.nav-item:hover { color: var(--text-main); }
+
+.progress-track { background: var(--bg-body); height: 8px; border-radius: 4px; overflow: hidden; margin-top: .25rem; }
+.progress-fill { height: 100%; transition: width .5s ease; border-radius: 4px; }
+.bg-green { background: var(--success); } .bg-yellow { background: var(--warning); }
+.bg-red { background: var(--danger); } .bg-primary { background: var(--primary); } .bg-info { background: var(--info); }
+
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+caption { text-align: left; font-size: .8rem; color: var(--text-muted); padding-bottom: .5rem; }
+th, td { text-align: left; padding: .75rem; border-bottom: 1px solid var(--border); }
+th { background: var(--bg-body); font-weight: 600; font-size: .85rem; color: var(--text-muted); }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--bg-body); }
+
+.fab { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 4px 10px rgba(0,0,0,.25); z-index: 90; }
+.fab:hover { background: var(--primary-dark); }
+
+dialog { border: none; border-radius: var(--radius); padding: 0; box-shadow: 0 20px 25px -5px rgba(0,0,0,.2); max-width: 600px; width: 90%; margin: auto; background: var(--bg-card); color: var(--text-main); }
+dialog::backdrop { background: rgba(0,0,0,.5); }
+.modal-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
+.modal-footer { padding: 1rem 1.5rem; background: var(--bg-body); display: flex; justify-content: flex-end; gap: .5rem; border-radius: 0 0 var(--radius) var(--radius); }
+
+.badge { display: inline-block; padding: .2rem .55rem; border-radius: 99px; font-size: .75rem; font-weight: 600; cursor: default; }
+.badge-needs { background: #dbeafe; color: #1e40af; }
+.badge-wants { background: #fce7f3; color: #9d174d; }
+.badge-savings { background: #d1fae5; color: #065f46; }
+body.dark-mode .badge-needs { background: #1e3a8a; color: #dbeafe; }
+body.dark-mode .badge-wants { background: #831843; color: #fce7f3; }
+body.dark-mode .badge-savings { background: #064e3b; color: #d1fae5; }
+.badge-checking { background: #dbeafe; color: #1e40af; } .badge-savings2 { background: #d1fae5; color: #065f46; }
+.badge-cash { background: #fef3c7; color: #92400e; } .badge-credit { background: #fee2e2; color: #991b1b; }
+.badge-investment { background: #e0e7ff; color: #3730a3; } .badge-ewallet { background: #ddd6fe; color: #5b21b6; }
+body.dark-mode .badge-checking { background: #1e3a8a; color: #dbeafe; }
+body.dark-mode .badge-cash { background: #78350f; color: #fef3c7; }
+body.dark-mode .badge-credit { background: #7f1d1d; color: #fee2e2; }
+body.dark-mode .badge-investment { background: #312e81; color: #e0e7ff; }
+body.dark-mode .badge-ewallet { background: #4c1d95; color: #ddd6fe; }
+body.dark-mode .badge-savings2 { background: #064e3b; color: #d1fae5; }
+
+.recurring-badge { background: var(--warning); color: #fff; padding: .1rem .4rem; border-radius: 4px; font-size: .7rem; margin-left: .4rem; }
+.transfer-badge { background: var(--info); color: #fff; padding: .1rem .4rem; border-radius: 4px; font-size: .7rem; margin-left: .4rem; }
+.reconciled-badge { background: var(--success); color: #fff; padding: .15rem .5rem; border-radius: 4px; font-size: .7rem; cursor: pointer; }
+.unreconciled-badge { background: var(--bg-body); color: var(--text-muted); border: 1px solid var(--border); padding: .15rem .5rem; border-radius: 4px; font-size: .7rem; cursor: pointer; }
+
+.box-highlight { background: #eef2ff; border-radius: 8px; padding: 1rem; }
+body.dark-mode .box-highlight { background: #374151; }
+
+.chart-bar-container { display: flex; align-items: flex-end; height: 150px; gap: 4px; padding-top: 20px; padding-bottom: 24px; }
+.chart-col { flex: 1; background: var(--primary); border-radius: 4px 4px 0 0; position: relative; min-height: 2px; transition: height .3s; opacity: .85; }
+.chart-col:hover { opacity: 1; }
+.chart-col.green { background: var(--success); }
+.chart-label { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; }
+
+.color-picker { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
+.color-option { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+.color-option.selected { border-color: var(--text-main); box-shadow: 0 0 0 2px var(--bg-card); }
+
+.alert { padding: .8rem 1rem; border-radius: var(--radius); margin-bottom: .6rem; border-left: 4px solid; font-size: .9rem; }
+.alert-warning { background: #fef3c7; border-color: var(--warning); color: #92400e; }
+.alert-danger { background: #fee2e2; border-color: var(--danger); color: #991b1b; }
+.alert-success { background: #d1fae5; border-color: var(--success); color: #065f46; }
+body.dark-mode .alert-warning { background: #78350f; color: #fef3c7; }
+body.dark-mode .alert-danger { background: #7f1d1d; color: #fee2e2; }
+body.dark-mode .alert-success { background: #064e3b; color: #d1fae5; }
+
+.account-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius); padding: 1.25rem; transition: all .2s; }
+.account-card:hover { border-color: var(--primary); }
+.account-card.low-balance { border-color: var(--danger); }
+.account-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+.month-item { padding: .8rem; background: var(--bg-body); border-radius: var(--radius); cursor: pointer; transition: all .2s; }
+.month-item:hover { background: var(--border); }
+.month-item.current { border: 2px solid var(--primary); }
+.calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .6rem; }
+
+.recurring-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+
+.split-row { display: grid; grid-template-columns: 1fr 120px 36px; gap: .5rem; align-items: center; }
+.show-more { width: 100%; margin-top: .75rem; }
+.sync-status { font-size: .85rem; padding: .6rem; border-radius: var(--radius); background: var(--bg-body); }
+.sync-status.online { color: var(--success); } .sync-status.offline { color: var(--text-muted); }
+
+#toast { position: fixed; bottom: 90px; left: 20px; right: 20px; max-width: 420px; z-index: 200; display: flex; flex-direction: column; gap: .5rem; }
+.toast-msg { background: var(--text-main); color: var(--bg-card); padding: .7rem 1.1rem; border-radius: var(--radius); box-shadow: var(--shadow); font-size: .9rem; opacity: 0; transform: translateY(8px); transition: all .3s; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.toast-msg.show { opacity: 1; transform: translateY(0); }
+.toast-msg.error { background: var(--danger); color: #fff; }
+.toast-action { background: none; border: none; color: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; font-size: .9rem; white-space: nowrap; }
+
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-muted); }
+.onboarding-step { display: flex; gap: .75rem; align-items: flex-start; padding: .5rem 0; }
+.onboarding-num { min-width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; }
+kbd { background: var(--bg-body); border: 1px solid var(--border); border-radius: 4px; padding: .05rem .35rem; font-size: .8em; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="flex flex-between flex-wrap gap-2">
+            <div class="flex gap-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <h1>ZenBudget Pro</h1>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn btn-outline btn-sm" id="syncBtn" aria-label="Cloud sync">☁️ Sync</button>
+                <button class="btn btn-outline btn-sm" id="toggleTheme" aria-label="Toggle dark mode (shortcut: T)">🌙</button>
+                <button class="btn btn-outline btn-sm" id="togglePrivacy" aria-label="Toggle privacy mode (shortcut: P)">👁️</button>
+                <button class="btn btn-outline btn-sm" id="importExportBtn">⇅ Import/Export</button>
+                <button class="btn btn-outline btn-sm" id="backupBtn">💾 Backup</button>
+            </div>
+        </div>
+        <nav role="tablist" aria-label="Main navigation">
+            <button class="nav-item active" data-tab="dashboard" role="tab">Dashboard</button>
+            <button class="nav-item" data-tab="accounts" role="tab">Accounts</button>
+            <button class="nav-item" data-tab="transactions" role="tab">Transactions</button>
+            <button class="nav-item" data-tab="planning" role="tab">Planning</button>
+            <button class="nav-item" data-tab="insights" role="tab">Insights</button>
+            <button class="nav-item" data-tab="recurring" role="tab">Recurring</button>
+            <button class="nav-item" data-tab="compare" role="tab">Compare</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container mt-4">
+
+    <div class="date-filter-bar">
+        <div class="flex flex-between flex-wrap gap-2">
+            <div class="flex gap-2 flex-wrap">
+                <div><label class="text-sm" for="dateFrom">From:</label><input type="date" id="dateFrom" style="width:150px;"></div>
+                <div><label class="text-sm" for="dateTo">To:</label><input type="date" id="dateTo" style="width:150px;"></div>
+                <button class="btn btn-primary btn-sm" id="applyDateFilter" style="align-self:flex-end;">Apply</button>
+                <button class="btn btn-outline btn-sm" id="clearDateFilter" style="align-self:flex-end;">Clear</button>
+            </div>
+            <div class="preset-buttons" role="group" aria-label="Date presets">
+                <button class="btn btn-outline" data-preset="thisWeek">This Week</button>
+                <button class="btn btn-outline active" data-preset="thisMonth">This Month</button>
+                <button class="btn btn-outline" data-preset="lastMonth">Last Month</button>
+                <button class="btn btn-outline" data-preset="last3Months">Last 3 Months</button>
+                <button class="btn btn-outline" data-preset="thisYear">This Year</button>
+                <button class="btn btn-outline" data-preset="all">All Time</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="view">
+        <div id="onboarding"></div>
+        <div id="budgetAlerts"></div>
+        <div class="card mb-4" style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;border:none;">
+            <div class="flex flex-between flex-wrap gap-4">
+                <div>
+                    <div class="text-sm" style="opacity:.9;">Total Net Worth</div>
+                    <div class="text-3xl private-data" id="dashNetWorth">₱0.00</div>
+                    <div class="text-xs mt-2" style="opacity:.8;">Across all accounts</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm" style="opacity:.9;">Liquid Assets</div>
+                    <div class="text-xl private-data" id="dashLiquid">₱0.00</div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-4 mb-4">
+            <div class="card"><div class="text-sm">Total Income</div><div class="text-xl text-success private-data" id="dashTotalIncome">₱0.00</div></div>
+            <div class="card"><div class="text-sm">Total Spent</div><div class="text-xl text-danger private-data" id="dashTotalSpent">₱0.00</div></div>
+            <div class="card"><div class="text-sm">Net Balance</div><div class="text-xl private-data" id="dashNet">₱0.00</div></div>
+            <div class="card"><div class="text-sm">Savings Rate</div><div class="text-xl private-data" id="dashSavingsRate">—</div></div>
+        </div>
+        <div class="grid grid-2">
+            <div class="card"><h3>Budget Status</h3><div id="budgetBars" class="mt-4 grid gap-4"></div></div>
+            <div class="card"><h3>Recent Transactions</h3><div id="recentList" class="mt-4 grid gap-2"></div></div>
+        </div>
+        <div class="grid grid-2 mt-4">
+            <div class="card"><h3>Account Overview</h3><div id="accountSummary" class="mt-4 grid gap-2"></div></div>
+            <div class="card"><h3>Monthly Overview</h3><p class="text-xs">Click a month to filter</p><div id="monthlyCalendar" class="calendar-grid mt-4"></div></div>
+        </div>
+        <div class="card mt-4"><h3>Upcoming (Next 30 Days)</h3><div id="upcomingList" class="mt-4 grid gap-2"></div></div>
+    </section>
+
+    <!-- ACCOUNTS -->
+    <section id="accounts" class="view hidden">
+        <div class="flex flex-between mb-4 flex-wrap gap-2">
+            <div><h2>Bank Accounts &amp; Funds</h2><p class="text-sm">Balances are derived from opening balance + transactions</p></div>
+            <div class="flex gap-2">
+                <button class="btn btn-outline" id="recalcBalancesBtn" title="Recompute balances from opening balance and transaction history">↻ Recalculate</button>
+                <button class="btn btn-primary" id="addAccountBtn">+ Add Account</button>
+            </div>
+        </div>
+        <div id="accountAlerts"></div>
+        <div class="grid grid-3 mb-4">
+            <div class="card"><div class="text-sm">Total Assets</div><div class="text-xl text-success private-data" id="totalAssets">₱0.00</div></div>
+            <div class="card"><div class="text-sm">Total Liabilities</div><div class="text-xl text-danger private-data" id="totalLiabilities">₱0.00</div></div>
+            <div class="card"><div class="text-sm">Net Worth</div><div class="text-xl private-data" id="netWorthDisplay">₱0.00</div></div>
+        </div>
+        <div class="grid grid-2">
+            <div><h3 class="mb-4">Your Accounts</h3><div id="accountsList" class="grid gap-3"></div></div>
+            <div><h3 class="mb-4">Account Balance Distribution</h3><div id="accountDistribution"></div></div>
+        </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="transactions" class="view hidden">
+        <div class="card">
+            <div class="flex flex-between mb-4 flex-wrap gap-2">
+                <input type="text" id="searchTx" placeholder="Search description... ( / )" style="max-width:250px;" aria-label="Search transactions">
+                <select id="filterAccount" style="max-width:180px;" aria-label="Filter by account"><option value="all">All Accounts</option></select>
+                <select id="filterCategory" style="max-width:180px;" aria-label="Filter by category"><option value="all">All Categories</option></select>
+                <select id="filterType" style="max-width:160px;" aria-label="Filter by type">
+                    <option value="all">All Types</option>
+                    <option value="expense">Expenses</option>
+                    <option value="income">Income</option>
+                    <option value="transfer_out">Transfers Out</option>
+                    <option value="transfer_in">Transfers In</option>
+                </select>
+            </div>
+            <div class="table-container">
+                <table>
+                    <caption id="transactionSummary"></caption>
+                    <thead><tr><th>Date</th><th>Description</th><th>Account</th><th>Category</th><th class="text-right">Amount</th><th class="text-center">Status</th><th class="text-right">Actions</th></tr></thead>
+                    <tbody id="txTableBody"></tbody>
+                </table>
+            </div>
+            <button class="btn btn-outline show-more hidden" id="showMoreTx">Show more</button>
+        </div>
+    </section>
+
+    <!-- PLANNING -->
+    <section id="planning" class="view hidden">
+        <div class="grid grid-2">
+            <div class="card">
+                <h3>Budget Configuration</h3>
+                <div class="flex flex-between mb-4 flex-wrap gap-2"><label for="monthlyIncome">Expected Monthly Income:</label><input type="number" id="monthlyIncome" min="0" step="0.01" style="width:150px;"></div>
+                <div id="categoryInputs" class="grid gap-2"></div>
+                <div class="mt-4 box-highlight"><div class="flex flex-between"><strong>Unassigned:</strong><strong id="unassignedMoney" class="private-data">₱0.00</strong></div></div>
+                <p class="text-xs mt-2">💡 Enable "Rollover" on a category to carry unspent budget into the next month.</p>
+            </div>
+            <div class="card">
+                <h3 id="categoryFormTitle">Manage Categories</h3>
+                <form id="addCategoryForm" class="flex flex-col gap-4 mb-4">
+                    <input type="hidden" id="editingCatId">
+                    <input type="text" id="newCatName" placeholder="Category Name" required maxlength="50" aria-label="Category name">
+                    <select id="newCatGroup" aria-label="Category group">
+                        <option value="needs">Needs</option>
+                        <option value="wants">Wants</option>
+                        <option value="savings">Savings</option>
+                    </select>
+                    <div><label class="text-sm">Color:</label><div class="color-picker" id="newCatColorPicker"></div><input type="hidden" id="newCatColor" value="#2563eb"></div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary" id="categorySubmitBtn" style="flex:1;">Create</button>
+                        <button type="button" class="btn btn-outline hidden" id="categoryCancelEdit">Cancel</button>
+                    </div>
+                </form>
+                <h4 class="mb-2">Existing Categories</h4>
+                <div id="categoryList" class="grid gap-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section id="insights" class="view hidden">
+        <div class="grid grid-2">
+            <div class="card"><h3>Spending by Group</h3><div id="groupBreakdown" class="mt-4"></div></div>
+            <div class="card"><h3>Monthly Spending (Last 12 Months)</h3><div id="trendChart" class="chart-bar-container"></div></div>
+        </div>
+        <div class="grid grid-2 mt-4">
+            <div class="card"><h3>Category Breakdown</h3><div id="categoryBreakdown" class="mt-4"></div></div>
+            <div class="card"><h3>Weekly Spending (Last 8 Weeks)</h3><div id="weeklyChart" class="chart-bar-container"></div></div>
+        </div>
+        <div class="card mt-4"><h3>Net Worth History (12 Months)</h3><div id="balanceHistoryChart" class="chart-bar-container"></div></div>
+    </section>
+
+    <!-- RECURRING -->
+    <section id="recurring" class="view hidden">
+        <div class="card">
+            <div class="flex flex-between mb-4 flex-wrap gap-2">
+                <div><h3>Recurring Transactions</h3><p class="text-sm">Processed automatically on app open, with catch-up for missed periods.</p></div>
+                <button class="btn btn-primary" id="addRecurringBtn">+ Add Recurring</button>
+            </div>
+            <div id="recurringList" class="grid gap-2"></div>
+        </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section id="compare" class="view hidden">
+        <div class="card mb-4">
+            <h3>Period Comparison</h3>
+            <div class="grid grid-2 gap-4 mt-4">
+                <div><label class="text-sm" for="compare1From">Period 1:</label><div class="flex gap-2"><input type="date" id="compare1From"><input type="date" id="compare1To"></div></div>
+                <div><label class="text-sm" for="compare2From">Period 2:</label><div class="flex gap-2"><input type="date" id="compare2From"><input type="date" id="compare2To"></div></div>
+            </div>
+            <button class="btn btn-primary mt-4" id="runComparisonBtn">Run Comparison</button>
+        </div>
+        <div id="comparisonResults"></div>
+    </section>
+</main>
+
+<button class="fab" id="openAddTxModal" aria-label="Add transaction (shortcut: N)">+</button>
+
+<!-- Transaction Modal -->
+<dialog id="txModal">
+    <form id="txForm">
+        <div class="modal-header"><h3 id="txModalTitle">Add Transaction</h3><button type="button" class="btn btn-outline btn-sm" data-close="txModal" aria-label="Close">✕</button></div>
+        <div class="modal-body grid gap-4">
+            <div class="flex gap-2" role="group" aria-label="Transaction type">
+                <button type="button" class="btn btn-primary" style="flex:1;" id="typeExpense">Expense</button>
+                <button type="button" class="btn btn-outline" style="flex:1;" id="typeIncome">Income</button>
+                <button type="button" class="btn btn-outline" style="flex:1;" id="typeTransfer">Transfer</button>
+            </div>
+            <input type="hidden" id="txId">
+            <input type="hidden" id="txType" value="expense">
+            <div><label class="text-sm" for="txAmount">Amount</label><input type="number" id="txAmount" step="0.01" required min="0.01"></div>
+            <div><label class="text-sm" for="txDate">Date</label><input type="date" id="txDate" required></div>
+            <div><label class="text-sm" for="txDesc">Description</label><input type="text" id="txDesc" required maxlength="200"></div>
+            <div id="accountSelectContainer"><label class="text-sm" for="txAccount">Account</label><select id="txAccount" required></select></div>
+            <div id="transferToContainer" class="hidden"><label class="text-sm" for="txTransferTo">Transfer To</label><select id="txTransferTo"></select></div>
+            <div id="categorySelectContainer"><label class="text-sm" for="txCategory">Category</label><select id="txCategory"></select></div>
+            <div id="splitsContainer" class="hidden">
+                <div class="flex flex-between"><label class="text-sm">Split across categories</label><button type="button" class="btn btn-outline btn-sm" id="addSplitBtn">+ Add split</button></div>
+                <div id="splitRows" class="grid gap-2 mt-2"></div>
+                <p class="text-xs mt-2" id="splitSumInfo"></p>
+            </div>
+            <div><label class="text-sm"><input type="checkbox" id="txReconciled" style="width:auto;"> Mark as cleared</label></div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="txModal">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+    </form>
+</dialog>
+
+<!-- Account Modal -->
+<dialog id="accountModal">
+    <form id="accountForm">
+        <div class="modal-header"><h3 id="accountModalTitle">Add Account</h3><button type="button" class="btn btn-outline btn-sm" data-close="accountModal" aria-label="Close">✕</button></div>
+        <div class="modal-body grid gap-4">
+            <input type="hidden" id="accountId">
+            <div><label class="text-sm" for="accountName">Account Name *</label><input type="text" id="accountName" required maxlength="100"></div>
+            <div><label class="text-sm" for="accountType">Type *</label>
+                <select id="accountType" required>
+                    <option value="checking">Checking</option>
+                    <option value="savings">Savings</option>
+                    <option value="cash">Cash/Wallet</option>
+                    <option value="credit">Credit Card</option>
+                    <option value="investment">Investment</option>
+                    <option value="ewallet">E-Wallet</option>
+                </select>
+            </div>
+            <div><label class="text-sm" for="accountInstitution">Bank/Institution</label><input type="text" id="accountInstitution" maxlength="100"></div>
+            <div><label class="text-sm" for="accountBalance">Opening Balance * <span class="text-xs">(negative for credit cards = amount owed)</span></label><input type="number" id="accountBalance" step="0.01" required></div>
+            <div><label class="text-sm" for="accountGoal">Target/Goal Balance</label><input type="number" id="accountGoal" step="0.01" min="0"></div>
+            <div><label class="text-sm" for="accountThreshold">Low Balance Alert Below</label><input type="number" id="accountThreshold" step="0.01" min="0"></div>
+            <div><label class="text-sm">Color:</label><div class="color-picker" id="accountColorPicker"></div><input type="hidden" id="accountColor" value="#2563eb"></div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="accountModal">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+    </form>
+</dialog>
+
+<!-- Recurring Modal -->
+<dialog id="recurringModal">
+    <form id="recurringForm">
+        <div class="modal-header"><h3 id="recurringModalTitle">Add Recurring</h3><button type="button" class="btn btn-outline btn-sm" data-close="recurringModal" aria-label="Close">✕</button></div>
+        <div class="modal-body grid gap-4">
+            <input type="hidden" id="recurringId">
+            <div><label class="text-sm" for="recurringDesc">Description</label><input type="text" id="recurringDesc" required maxlength="200"></div>
+            <div><label class="text-sm" for="recurringAmount">Amount</label><input type="number" id="recurringAmount" step="0.01" required min="0.01"></div>
+            <div><label class="text-sm" for="recurringType">Type</label>
+                <select id="recurringType">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                    <option value="transfer">Transfer</option>
+                </select>
+            </div>
+            <div><label class="text-sm" for="recurringAccount">Account</label><select id="recurringAccount" required></select></div>
+            <div id="recurringTransferToContainer" class="hidden"><label class="text-sm" for="recurringTransferTo">Transfer To</label><select id="recurringTransferTo"></select></div>
+            <div id="recurringCategoryContainer"><label class="text-sm" for="recurringCategory">Category</label><select id="recurringCategory"></select></div>
+            <div><label class="text-sm" for="recurringFrequency">Frequency</label>
+                <select id="recurringFrequency">
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            </div>
+            <div id="recurringDayContainer"><label class="text-sm" for="recurringDay">Day of Month (1-28)</label><input type="number" id="recurringDay" min="1" max="28" value="1"></div>
+            <div><label class="text-sm" for="recurringStartDate">Start Date</label><input type="date" id="recurringStartDate" required></div>
+            <div><label class="text-sm"><input type="checkbox" id="recurringActive" checked style="width:auto;"> Active</label></div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="recurringModal">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
+    </form>
+</dialog>
+
+<!-- Import/Export Modal -->
+<dialog id="importExportModal">
+    <div class="modal-header"><h3>Import &amp; Export</h3><button type="button" class="btn btn-outline btn-sm" data-close="importExportModal" aria-label="Close">✕</button></div>
+    <div class="modal-body flex flex-col gap-4">
+        <h4>Export</h4>
+        <button class="btn btn-primary" id="exportFilteredCSV">Export Filtered Transactions (CSV)</button>
+        <button class="btn btn-primary" id="exportAllCSV">Export All Transactions (CSV)</button>
+        <button class="btn btn-primary" id="exportAccountsCSV">Export Accounts (CSV)</button>
+        <button class="btn btn-primary" id="exportMonthlyReport">Export Monthly Report (CSV)</button>
+        <hr style="border:none;border-top:1px solid var(--border);">
+        <h4>Import CSV Transactions</h4>
+        <p class="text-xs">Expected columns (any order, header row optional): Date, Description, Amount, Type (expense/income), Account, Category. Negative amounts are treated as expenses if no Type column.</p>
+        <input type="file" id="importCsvFile" accept=".csv,text/csv">
+        <div><label class="text-sm" for="importCsvAccount">Default account for rows without an Account column:</label><select id="importCsvAccount"></select></div>
+        <button class="btn btn-success" id="importCsvBtn">Import</button>
+        <div id="importCsvResult" class="text-sm"></div>
+    </div>
+</dialog>
+
+<!-- Backup Modal -->
+<dialog id="backupModal">
+    <div class="modal-header"><h3>Backup &amp; Restore</h3><button type="button" class="btn btn-outline btn-sm" data-close="backupModal" aria-label="Close">✕</button></div>
+    <div class="modal-body flex flex-col gap-4">
+        <button class="btn btn-success" id="exportBackupBtn">📥 Download Full Backup (JSON)</button>
+        <div class="mt-2">
+            <label class="btn btn-info" for="importBackupFile">📤 Restore from Backup</label>
+            <input type="file" id="importBackupFile" accept=".json" style="display:none;">
+            <p class="text-xs mt-2">⚠️ Warning: This will replace all current data (undoable via the toast).</p>
+        </div>
+    </div>
+</dialog>
+
+<!-- Sync Modal -->
+<dialog id="syncModal">
+    <div class="modal-header"><h3>Cloud Sync (Supabase)</h3><button type="button" class="btn btn-outline btn-sm" data-close="syncModal" aria-label="Close">✕</button></div>
+    <div class="modal-body flex flex-col gap-4">
+        <div id="syncStatus" class="sync-status offline">Not connected</div>
+        <details>
+            <summary class="text-sm" style="cursor:pointer;">Supabase connection settings</summary>
+            <div class="flex flex-col gap-2 mt-2">
+                <div><label class="text-sm" for="supabaseUrl">Project URL</label><input type="url" id="supabaseUrl" placeholder="https://xxxx.supabase.co"></div>
+                <div><label class="text-sm" for="supabaseKey">Anon (public) key</label><input type="text" id="supabaseKey" placeholder="eyJ..."></div>
+                <button class="btn btn-primary" id="saveSupabaseCfg">Save Connection</button>
+            </div>
+        </details>
+        <div id="authSection" class="flex flex-col gap-2">
+            <div><label class="text-sm" for="syncEmail">Email</label><input type="email" id="syncEmail" autocomplete="email"></div>
+            <div><label class="text-sm" for="syncPassword">Password (min 6 chars)</label><input type="password" id="syncPassword" autocomplete="current-password"></div>
+            <div class="flex gap-2">
+                <button class="btn btn-primary" id="signInBtn" style="flex:1;">Sign In</button>
+                <button class="btn btn-outline" id="signUpBtn" style="flex:1;">Sign Up</button>
+            </div>
+        </div>
+        <div id="signedInSection" class="hidden flex flex-col gap-2">
+            <button class="btn btn-primary" id="pushNowBtn">⬆ Push local data to cloud</button>
+            <button class="btn btn-info" id="pullNowBtn">⬇ Pull cloud data to this device</button>
+            <button class="btn btn-outline" id="signOutBtn">Sign Out</button>
+        </div>
+        <p class="text-xs">How it works: changes are auto-pushed ~5s after you make them (when online and signed in). On sign-in, newer cloud data replaces local data automatically (with undo). Use the manual buttons to control sync direction explicitly. Last-writer-wins: the newest push overwrites the cloud copy.</p>
+    </div>
+</dialog>
+
+<div id="toast" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+/* ================= CONSTANTS ================= */
+const STORAGE_KEY = 'zenbudget_pro_data';
+const STATE_VERSION = 2;
+const PAGE_SIZE = 200;
+const COLOR_PALETTE = ['#2563eb','#dc2626','#059669','#d97706','#7c3aed','#db2777','#0891b2','#65a30d','#ea580c','#4f46e5'];
+const ACCOUNT_ICONS = { checking:'🏦', savings:'💰', cash:'💵', credit:'💳', investment:'📈', ewallet:'📱' };
+const ACCOUNT_BADGES = { checking:'badge-checking', savings:'badge-savings2', cash:'badge-cash', credit:'badge-credit', investment:'badge-investment', ewallet:'badge-ewallet' };
+const LIQUID_TYPES = ['checking','savings','cash','ewallet'];
+const GROUP_BADGES = { needs:'badge-needs', wants:'badge-wants', savings:'badge-savings' };
+const SYNC_CFG_KEY = 'zenbudget_supabase_cfg';
+
+/* ================= UTILS ================= */
+const Utils = {
+    roundMoney: n => Math.round((Number(n) + Number.EPSILON) * 100) / 100,
+    fmtMoney(n) {
+        if (typeof n !== 'number' || !isFinite(n)) n = 0;
+        return new Intl.NumberFormat('en-PH', { style:'currency', currency:'PHP', minimumFractionDigits:2, maximumFractionDigits:2 }).format(n);
+    },
+    fmtDate(s) {
+        if (!s) return '';
+        try { return new Date(s + 'T00:00:00').toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' }); }
+        catch (e) { return s; }
+    },
+    todayStr() { return Utils.toISO(new Date()); },
+    parseDate(s) { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); },
+    toISO(d) {
+        const p = n => String(n).padStart(2,'0');
+        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+    },
+    daysInMonth(y, m) { return new Date(y, m+1, 0).getDate(); }, // m 0-based
+    escapeHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    },
+    inRange(dateStr, from, to) {
+        if (!dateStr) return false;
+        if (from && dateStr < from) return false;
+        if (to && dateStr > to) return false;
+        return true;
+    },
+    getDateRange(preset) {
+        const now = new Date(), y = now.getFullYear(), m = now.getMonth();
+        switch (preset) {
+            case 'thisWeek': {
+                const dow = (now.getDay() + 6) % 7;
+                return { from: Utils.toISO(new Date(y, m, now.getDate() - dow)), to: Utils.toISO(new Date(y, m, now.getDate() - dow + 6)) };
+            }
+            case 'lastMonth': return { from: Utils.toISO(new Date(y, m-1, 1)), to: Utils.toISO(new Date(y, m, 0)) };
+            case 'last3Months': return { from: Utils.toISO(new Date(y, m-2, 1)), to: Utils.todayStr() };
+            case 'thisYear': return { from: `${y}-01-01`, to: `${y}-12-31` };
+            case 'all': return { from: null, to: null };
+            case 'thisMonth':
+            default: return { from: Utils.toISO(new Date(y, m, 1)), to: Utils.toISO(new Date(y, m+1, 0)) };
+        }
+    },
+    uid(prefix) { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`; },
+    monthKey(d) { return d.slice(0, 7); },
+    monthEnd(key) { const [y,m] = key.split('-').map(Number); return Utils.toISO(new Date(y, m, 0)); },
+    monthLabel(key) {
+        const [y,m] = key.split('-').map(Number);
+        return new Date(y, m-1, 1).toLocaleString('en-PH', { month:'short', year:'2-digit' });
+    },
+    lastNMonthKeys(n) {
+        const keys = [], now = new Date();
+        for (let i = n-1; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+            keys.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+        }
+        return keys;
+    },
+    prevMonthKey(key) {
+        const [y,m] = key.split('-').map(Number);
+        const d = new Date(y, m-2, 1);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    },
+    download(filename, content, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    },
+    csvField(v) { return `"${String(v ?? '').replace(/"/g, '""')}"`; },
+    parseCSV(text) {
+        const rows = []; let row = [], field = '', inQ = false;
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (inQ) {
+                if (c === '"') { if (text[i+1] === '"') { field += '"'; i++; } else inQ = false; }
+                else field += c;
+            } else if (c === '"') inQ = true;
+            else if (c === ',') { row.push(field); field = ''; }
+            else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+            else if (c !== '\r') field += c;
+        }
+        if (field !== '' || row.length) { row.push(field); rows.push(row); }
+        return rows.filter(r => r.length > 1 || (r[0] || '').trim() !== '');
+    },
+    // Tolerant date parsing: ISO, MM/DD/YYYY, or anything Date() understands
+    parseFlexibleDate(s) {
+        s = String(s || '').trim();
+        if (!s) return null;
+        let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); return isNaN(d) ? null : Utils.toISO(d); }
+        m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (m) { const d = new Date(+m[3], +m[1]-1, +m[2]); return isNaN(d) ? null : Utils.toISO(d); }
+        const d = new Date(s);
+        return isNaN(d) ? null : Utils.toISO(d);
+    },
+    parseAmount(s) {
+        if (s == null) return NaN;
+        const n = parseFloat(String(s).replace(/[₱$,\s]/g, ''));
+        return isNaN(n) ? NaN : n;
+    }
+};
+
+/* ================= TOAST (with undo action) ================= */
+const Toast = {
+    show(msg, opts = {}) {
+        const box = document.getElementById('toast');
+        const el = document.createElement('div');
+        el.className = 'toast-msg' + (opts.isError ? ' error' : '');
+        const span = document.createElement('span');
+        span.textContent = msg;
+        el.appendChild(span);
+        if (opts.actionLabel) {
+            const btn = document.createElement('button');
+            btn.className = 'toast-action';
+            btn.textContent = opts.actionLabel;
+            btn.addEventListener('click', () => { opts.onAction?.(); el.remove(); });
+            el.appendChild(btn);
+        }
+        box.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, opts.isError ? 5000 : 6000);
+    }
+};
+
+/* ================= VALIDATORS ================= */
+const Validators = {
+    isValidAmount: a => typeof a === 'number' && isFinite(a) && a !== 0 && Math.abs(a) < 999999999,
+    isValidDate: s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s),
+    isValidHexColor: c => /^#[0-9A-F]{6}$/i.test(c),
+    sanitizeString: (s, max = 200) => typeof s === 'string' ? s.trim().substring(0, max) : ''
+};
+
+/* ================= STORE =================
+   Structural fix: balances are DERIVED, never mutated.
+   balance = openingBalance + sum(all transaction amounts for the account). */
+const Store = {
+    revision: 0,
+    _undoSnapshot: null,
+    state: {
+        _version: STATE_VERSION,
+        transactions: [],
+        accounts: [],
+        categories: [
+            { id:'c1', name:'Rent/Mortgage', group:'needs',   limit:15000, color:'#2563eb', rollover:false },
+            { id:'c2', name:'Groceries',     group:'needs',   limit:5000,  color:'#059669', rollover:false },
+            { id:'c3', name:'Utilities',     group:'needs',   limit:2000,  color:'#d97706', rollover:false },
+            { id:'c4', name:'Dining Out',    group:'wants',   limit:1500,  color:'#dc2626', rollover:false },
+            { id:'c5', name:'Entertainment', group:'wants',   limit:1000,  color:'#7c3aed', rollover:false },
+            { id:'c6', name:'Emergency Fund',group:'savings', limit:3000,  color:'#0891b2', rollover:false }
+        ],
+        recurring: [],
+        income: 30000,
+        privacyMode: false,
+        theme: 'light',
+        dateFilter: { from: null, to: null, preset: 'thisMonth' },
+        lastSyncAt: null
+    },
+
+    init() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.migrate(parsed, parsed._version || 1);
+                this.state = { ...this.state, ...parsed };
+                this.normalize(this.state);
+            }
+        } catch (err) {
+            console.error('Load failed:', err);
+            Toast.show('Could not load saved data — starting fresh.', { isError: true });
+        }
+        this.recalcBalances();
+    },
+
+    migrate(data, fromVersion) {
+        // v1 -> v2: introduce openingBalance + rollover
+        if (fromVersion < 2) {
+            (data.accounts || []).forEach(a => {
+                if (a.openingBalance == null) {
+                    const txSum = (data.transactions || []).filter(t => t.accountId === a.id).reduce((s, t) => s + t.amount, 0);
+                    a.openingBalance = Utils.roundMoney((a.balance || 0) - txSum);
+                }
+            });
+            (data.categories || []).forEach(c => { if (c.rollover === undefined) c.rollover = false; });
+        }
+        data._version = STATE_VERSION;
+    },
+
+    normalize(state) {
+        state.transactions = Array.isArray(state.transactions) ? state.transactions : [];
+        state.accounts = (state.accounts || []).map(a => ({
+            ...a,
+            balance: Utils.roundMoney(parseFloat(a.balance) || 0),
+            openingBalance: Utils.roundMoney(parseFloat(a.openingBalance) || 0),
+            goalBalance: a.goalBalance != null && a.goalBalance !== '' ? Utils.roundMoney(parseFloat(a.goalBalance)) : null,
+            lowBalanceThreshold: a.lowBalanceThreshold != null && a.lowBalanceThreshold !== '' ? Utils.roundMoney(parseFloat(a.lowBalanceThreshold)) : null,
+            color: Validators.isValidHexColor(a.color) ? a.color : COLOR_PALETTE[0]
+        }));
+        state.categories = (state.categories || []).map(c => ({
+            ...c,
+            color: Validators.isValidHexColor(c.color) ? c.color : COLOR_PALETTE[0],
+            limit: parseFloat(c.limit) || 0,
+            rollover: !!c.rollover
+        }));
+        state.recurring = Array.isArray(state.recurring) ? state.recurring : [];
+        state.dateFilter = state.dateFilter || { from: null, to: null, preset: 'thisMonth' };
+    },
+
+    save(renderSections = ['all']) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+        } catch (err) {
+            console.error('Save failed:', err);
+            Toast.show(err.name === 'QuotaExceededError'
+                ? 'Storage is full — download a backup and remove old data.'
+                : 'Failed to save data.', { isError: true });
+            return false;
+        }
+        this.revision++;
+        if (renderSections) App.render(renderSections);
+        Sync.schedulePush();
+        return true;
+    },
+
+    /* ---- Derived balances ---- */
+    recalcBalances() {
+        this.state.accounts.forEach(acc => {
+            acc.balance = Utils.roundMoney(acc.openingBalance +
+                this.state.transactions.filter(t => t.accountId === acc.id).reduce((s, t) => s + t.amount, 0));
+        });
+    },
+
+    /* ---- Undo ---- */
+    snapshot() {
+        this._undoSnapshot = JSON.stringify({
+            transactions: this.state.transactions,
+            accounts: this.state.accounts,
+            categories: this.state.categories,
+            recurring: this.state.recurring,
+            income: this.state.income
+        });
+    },
+    undo() {
+        if (!this._undoSnapshot) return;
+        const snap = JSON.parse(this._undoSnapshot);
+        this._undoSnapshot = null;
+        Object.assign(this.state, snap);
+        this.recalcBalances();
+        this.save(['all']);
+        Toast.show('Undone — previous state restored.');
+    },
+    /** Wrap a destructive op: auto-offers Undo via returned helper. */
+    destructive(action, confirmMsg, successMsg) {
+        if (confirmMsg && !confirm(confirmMsg)) return false;
+        this.snapshot();
+        const result = action();
+        if (result !== false && successMsg) {
+            Toast.show(successMsg, { actionLabel: 'Undo', onAction: () => this.undo() });
+        }
+        return result !== false;
+    },
+
+    /* ---- Lookups ---- */
+    categoryById(id) { return id ? this.state.categories.find(c => c.id === id) || null : null; },
+    accountById(id) { return id ? this.state.accounts.find(a => a.id === id) || null : null; },
+    accountName(id) { const a = this.accountById(id); return a ? a.name : 'Unknown Account'; },
+    categoryName(id) { const c = this.categoryById(id); return c ? c.name : 'Uncategorized'; },
+
+    netWorth() { return Utils.roundMoney(this.state.accounts.reduce((s, a) => s + a.balance, 0)); },
+    liquidAssets() { return Utils.roundMoney(this.state.accounts.filter(a => LIQUID_TYPES.includes(a.type)).reduce((s, a) => s + a.balance, 0)); },
+
+    /* ---- Transactions ---- */
+    validateTx(tx) {
+        const amount = parseFloat(tx.amount);
+        if (!Validators.isValidAmount(amount)) return { error: 'Please enter a valid non-zero amount.' };
+        if (!Validators.isValidDate(tx.date)) return { error: 'Please enter a valid date.' };
+        const desc = Validators.sanitizeString(tx.desc, 200);
+        if (!desc) return { error: 'Description is required.' };
+        if (!this.accountById(tx.accountId)) return { error: 'Please select a valid account.' };
+        if (tx.type === 'expense' && tx.category && !this.categoryById(tx.category)) return { error: 'Please select a valid category.' };
+        if (tx.type === 'transfer_out' && (!tx.transferTo || tx.transferTo === tx.accountId)) return { error: 'Select a different destination account.' };
+        if (tx.type === 'transfer_out' && !this.accountById(tx.transferTo)) return { error: 'Invalid destination account.' };
+        // Splits validation (expense only, positive amounts, must sum to total)
+        let splits = null;
+        if (tx.type === 'expense' && Array.isArray(tx.splits) && tx.splits.length > 0) {
+            splits = [];
+            for (const s of tx.splits) {
+                const amt = parseFloat(s.amount);
+                if (!this.categoryById(s.categoryId)) return { error: 'Split has an invalid category.' };
+                if (!Validators.isValidAmount(amt) || amt < 0) return { error: 'Split amounts must be positive numbers.' };
+                splits.push({ categoryId: s.categoryId, amount: Utils.roundMoney(amt) });
+            }
+            const sum = Utils.roundMoney(splits.reduce((acc, s) => acc + s.amount, 0));
+            if (Math.abs(sum - Math.abs(amount)) > 0.005) return { error: `Split total (${Utils.fmtMoney(sum)}) must equal the transaction amount (${Utils.fmtMoney(Math.abs(amount))}).` };
+        }
+        return { amount, desc, splits };
+    },
+
+    /** Create and store a validated transaction (handles transfer pairs). Amount is positive. */
+    applyTransaction(d) {
+        const mk = (over) => ({
+            id: Utils.uid('tx'), type: d.type, date: d.date, desc: d.desc,
+            accountId: d.accountId, category: d.type === 'expense' ? (d.category || null) : null,
+            transferTo: d.type === 'transfer_out' ? d.transferTo : null,
+            amount: d.type === 'expense' || d.type === 'transfer_out' ? -Math.abs(d.amount) : Math.abs(d.amount),
+            splits: d.type === 'expense' ? (d.splits || null) : null,
+            recurring: !!d.recurring, recurringId: d.recurringId || null,
+            reconciled: !!d.reconciled, linkedTransferId: null,
+            createdAt: new Date().toISOString(), ...over
+        });
+        if (d.type === 'transfer_out') {
+            const out = mk({});
+            const inc = mk({ type: 'transfer_in', accountId: d.transferTo, category: null,
+                desc: `Transfer from ${this.accountName(d.accountId)}`, amount: Math.abs(d.amount),
+                recurringId: null, linkedTransferId: out.id, splits: null });
+            out.linkedTransferId = inc.id;
+            this.state.transactions.push(out, inc);
+        } else {
+            this.state.transactions.push(mk({}));
+        }
+    },
+
+    addTransaction(tx) {
+        const v = this.validateTx(tx);
+        if (v.error) { Toast.show(v.error, { isError: true }); return false; }
+        this.applyTransaction({ ...tx, amount: v.amount, desc: v.desc, splits: v.splits });
+        this.recalcBalances();
+        this.save(['dashboard', 'transactions', 'accounts', 'insights']);
+        return true;
+    },
+
+    updateTransaction(id, tx) {
+        const old = this.state.transactions.find(t => t.id === id);
+        if (!old) return false;
+        const v = this.validateTx(tx);
+        if (v.error) { Toast.show(v.error, { isError: true }); return false; }
+
+        // Remove old entry (and its transfer pair) — balances are derived, so removal is safe
+        if ((old.type === 'transfer_out' || old.type === 'transfer_in') && old.linkedTransferId) {
+            this.state.transactions = this.state.transactions.filter(t => t.id !== old.linkedTransferId && t.id !== id);
+        } else {
+            this.state.transactions = this.state.transactions.filter(t => t.id !== id);
+        }
+        this.applyTransaction({ ...tx, amount: v.amount, desc: v.desc, splits: v.splits, reconciled: tx.reconciled ?? old.reconciled });
+        this.recalcBalances();
+        this.save(['dashboard', 'transactions', 'accounts', 'insights']);
+        return true;
+    },
+
+    deleteTransaction(id) {
+        const tx = this.state.transactions.find(t => t.id === id);
+        if (!tx) return false;
+        const ok = this.destructive(() => {
+            if ((tx.type === 'transfer_out' || tx.type === 'transfer_in') && tx.linkedTransferId) {
+                this.state.transactions = this.state.transactions.filter(t => t.id !== tx.linkedTransferId && t.id !== id);
+            } else {
+                this.state.transactions = this.state.transactions.filter(t => t.id !== id);
+            }
+            this.recalcBalances();
+            this.save(['dashboard', 'transactions', 'accounts', 'insights']);
+        }, 'Delete this transaction?', 'Transaction deleted.');
+        return ok;
+    },
+
+    toggleReconciled(id) {
+        const tx = this.state.transactions.find(t => t.id === id);
+        if (!tx) return false;
+        tx.reconciled = !tx.reconciled;
+        this.save(['transactions']);
+        return true;
+    },
+
+    /* ---- Accounts ---- */
+    saveAccount(input) {
+        const name = Validators.sanitizeString(input.name, 100);
+        if (!name) { Toast.show('Account name is required.', { isError: true }); return false; }
+        const balance = parseFloat(input.balance);
+        if (isNaN(balance)) { Toast.show('Please enter a valid opening balance.', { isError: true }); return false; }
+
+        const acc = {
+            id: input.id || Utils.uid('acc'),
+            name,
+            type: input.type || 'checking',
+            institution: Validators.sanitizeString(input.institution, 100),
+            openingBalance: Utils.roundMoney(balance),
+            goalBalance: input.goalBalance !== '' && input.goalBalance != null ? Utils.roundMoney(parseFloat(input.goalBalance)) : null,
+            lowBalanceThreshold: input.lowBalanceThreshold !== '' && input.lowBalanceThreshold != null ? Utils.roundMoney(parseFloat(input.lowBalanceThreshold)) : null,
+            color: Validators.isValidHexColor(input.color) ? input.color : COLOR_PALETTE[0],
+            createdAt: input.createdAt || new Date().toISOString()
+        };
+        const idx = this.state.accounts.findIndex(a => a.id === acc.id);
+        if (idx >= 0) {
+            // Preserve id/createdAt; keep existing transactions attached
+            this.state.accounts[idx] = { ...this.state.accounts[idx], ...acc, id: this.state.accounts[idx].id, createdAt: this.state.accounts[idx].createdAt };
+        } else {
+            this.state.accounts.push(acc);
+        }
+        this.recalcBalances();
+        this.save(['dashboard', 'accounts']);
+        return true;
+    },
+
+    deleteAccount(id) {
+        const acc = this.accountById(id);
+        if (!acc) return false;
+        const txCount = this.state.transactions.filter(t => t.accountId === id || t.transferTo === id).length;
+        const recCount = this.state.recurring.filter(r => r.accountId === id || r.transferTo === id).length;
+        const msg = (txCount || recCount)
+            ? `Delete "${acc.name}"? Its ${txCount} transaction(s) and ${recCount} recurring rule(s) will also be deleted.`
+            : `Delete "${acc.name}"?`;
+        return this.destructive(() => {
+            this.state.transactions = this.state.transactions.filter(t => t.accountId !== id && t.transferTo !== id);
+            this.state.recurring = this.state.recurring.filter(r => r.accountId !== id && r.transferTo !== id);
+            this.state.accounts = this.state.accounts.filter(a => a.id !== id);
+            this.save(['all']);
+        }, msg, 'Account deleted.');
+    },
+
+    /* ---- Categories ---- */
+    addCategory(name, group, color) {
+        const clean = Validators.sanitizeString(name, 50);
+        if (!clean) { Toast.show('Category name is required.', { isError: true }); return false; }
+        if (!['needs','wants','savings'].includes(group)) { Toast.show('Invalid group.', { isError: true }); return false; }
+        this.state.categories.push({
+            id: Utils.uid('cat'), name: clean, group, limit: 0, rollover: false,
+            color: Validators.isValidHexColor(color) ? color : COLOR_PALETTE[0]
+        });
+        this.save(['planning', 'dashboard', 'transactions']);
+        return true;
+    },
+
+    deleteCategory(id) {
+        if (this.state.transactions.some(t => t.category === id || (t.splits && t.splits.some(s => s.categoryId === id)))) {
+            if (!confirm('This category is used by transactions (including splits). Transactions will keep working but show as "Uncategorized". Delete anyway?')) return false;
+        }
+        return this.destructive(() => {
+            this.state.recurring.forEach(r => { if (r.category === id) r.category = null; });
+            this.state.transactions.forEach(t => {
+                if (t.category === id) t.category = null;
+                if (t.splits) t.splits = t.splits.filter(s => s.categoryId !== id);
+                if (t.splits && t.splits.length === 0) t.splits = null;
+            });
+            this.state.categories = this.state.categories.filter(c => c.id !== id);
+            this.save(['all']);
+        }, null, 'Category deleted.');
+    },
+
+    updateCategory(id, updates) {
+        const cat = this.categoryById(id);
+        if (!cat) return false;
+        if (updates.color !== undefined && !Validators.isValidHexColor(updates.color)) return false;
+        if (updates.name !== undefined) {
+            const clean = Validators.sanitizeString(updates.name, 50);
+            if (!clean) { Toast.show('Name required.', { isError: true }); return false; }
+            updates.name = clean;
+        }
+        Object.assign(cat, updates);
+        this.save(['planning', 'dashboard', 'transactions']);
+        return true;
+    },
+
+    updateBudgetLimit(id, limit) {
+        const cat = this.categoryById(id);
+        if (!cat) return false;
+        const parsed = parseFloat(limit);
+        if (isNaN(parsed) || parsed < 0) { Toast.show('Budget limit must be a non-negative number.', { isError: true }); return false; }
+        cat.limit = Utils.roundMoney(parsed);
+        this.save(['planning', 'dashboard']);
+        return true;
+    },
+
+    /* ---- Recurring ---- */
+    nextDueDate(r) {
+        if (!r.lastProcessed) return r.startDate;
+        const d = Utils.parseDate(r.lastProcessed);
+        if (r.frequency === 'weekly') { d.setDate(d.getDate() + 7); return Utils.toISO(d); }
+        if (r.frequency === 'yearly') { d.setFullYear(d.getFullYear() + 1); return Utils.toISO(d); }
+        const day = Math.min(r.day || 1, 28);
+        let y = d.getFullYear(), m = d.getMonth();
+        let cand = new Date(y, m, Math.min(day, Utils.daysInMonth(y, m)));
+        if (cand <= d) { m += 1; cand = new Date(y, m, Math.min(day, Utils.daysInMonth(y, m))); }
+        return Utils.toISO(cand);
+    },
+
+    saveRecurring(input) {
+        const desc = Validators.sanitizeString(input.desc, 200);
+        const amount = parseFloat(input.amount);
+        if (!desc) { Toast.show('Description is required.', { isError: true }); return false; }
+        if (!Validators.isValidAmount(amount)) { Toast.show('Please enter a valid amount.', { isError: true }); return false; }
+        if (!Validators.isValidDate(input.startDate)) { Toast.show('Please enter a valid start date.', { isError: true }); return false; }
+        if (!this.accountById(input.accountId)) { Toast.show('Please select a valid account.', { isError: true }); return false; }
+        const type = ['expense','income','transfer'].includes(input.type) ? input.type : 'expense';
+        if (type === 'expense' && !this.categoryById(input.category)) { Toast.show('Please select a valid category.', { isError: true }); return false; }
+        if (type === 'transfer' && (!input.transferTo || input.transferTo === input.accountId)) { Toast.show('Select a different destination account for the transfer.', { isError: true }); return false; }
+        if (type === 'transfer' && !this.accountById(input.transferTo)) { Toast.show('Invalid transfer destination.', { isError: true }); return false; }
+
+        const rule = {
+            id: input.id || Utils.uid('rec'),
+            desc, amount: Utils.roundMoney(Math.abs(amount)), type,
+            accountId: input.accountId,
+            transferTo: type === 'transfer' ? input.transferTo : null,
+            category: type === 'expense' ? input.category : null,
+            frequency: ['monthly','weekly','yearly'].includes(input.frequency) ? input.frequency : 'monthly',
+            day: Math.min(Math.max(parseInt(input.day) || 1, 1), 28),
+            startDate: input.startDate,
+            active: input.active !== false,
+            lastProcessed: input.lastProcessed || null
+        };
+        const idx = this.state.recurring.findIndex(r => r.id === rule.id);
+        if (idx >= 0) this.state.recurring[idx] = rule;
+        else this.state.recurring.push(rule);
+        this.save(['recurring', 'dashboard']);
+        return true;
+    },
+
+    deleteRecurring(id) {
+        return this.destructive(() => {
+            this.state.recurring = this.state.recurring.filter(r => r.id !== id);
+            this.save(['recurring', 'dashboard']);
+        }, 'Delete this recurring rule?', 'Recurring rule deleted.');
+    },
+
+    toggleRecurringActive(id) {
+        const r = this.state.recurring.find(x => x.id === id);
+        if (!r) return false;
+        r.active = !r.active;
+        this.save(['recurring', 'dashboard']);
+        return true;
+    },
+
+    /* Catch-up loop: generates EVERY missed occurrence (capped as runaway guard). */
+    processRecurring() {
+        const today = Utils.todayStr();
+        let changed = false;
+        this.state.recurring.forEach(r => {
+            if (!r.active) return;
+            let guard = 0;
+            let due = this.nextDueDate(r);
+            while (due && due <= today && guard < 60) {
+                this.applyTransaction({
+                    type: r.type, amount: r.amount, date: due, desc: r.desc,
+                    accountId: r.accountId, transferTo: r.transferTo, category: r.category,
+                    recurring: true, recurringId: r.id, reconciled: false
+                });
+                r.lastProcessed = due;
+                changed = true;
+                due = this.nextDueDate(r);
+                guard++;
+            }
+        });
+        if (changed) {
+            this.recalcBalances();
+            this.save(['all']);
+            Toast.show('Recurring transactions were processed.');
+        }
+    },
+
+    /* ---- Theme / privacy / filter ---- */
+    toggleTheme() {
+        this.state.theme = this.state.theme === 'dark' ? 'light' : 'dark';
+        document.body.classList.toggle('dark-mode', this.state.theme === 'dark');
+        this.save(null);
+    },
+    togglePrivacy() {
+        this.state.privacyMode = !this.state.privacyMode;
+        document.body.classList.toggle('privacy-mode', this.state.privacyMode);
+        this.save(null);
+    },
+    setDateFilter(from, to, preset) {
+        this.state.dateFilter = { from, to, preset: preset || 'custom' };
+        this.save(['all']);
+    }
+};
+
+/* ================= SUPABASE SYNC =================
+   Lazy-loads the client from CDN only when the user opens Sync (works offline without it). */
+const Sync = {
+    cfg: null, client: null, user: null, _pushTimer: null, _pushFailedOnce: false,
+
+    loadCfg() {
+        try { this.cfg = JSON.parse(localStorage.getItem(SYNC_CFG_KEY) || 'null'); } catch (e) { this.cfg = null; }
+    },
+    saveCfg(url, key) {
+        this.cfg = { url: url.trim(), key: key.trim() };
+        localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(this.cfg));
+        this.client = null;
+    },
+
+    async getClient() {
+        if (!this.cfg?.url || !this.cfg?.key) throw new Error('Supabase connection not configured.');
+        if (!this.client) {
+            const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+            this.client = createClient(this.cfg.url, this.cfg.key);
+        }
+        return this.client;
+    },
+
+    async init() {
+        this.loadCfg();
+        if (!this.cfg) return;
+        try {
+            const c = await this.getClient();
+            const { data } = await c.auth.getSession();
+            this.user = data?.session?.user || null;
+            if (this.user) {
+                this.renderUI();
+                await this.pull(false); // silent auto-pull of newer cloud data on start
+            }
+        } catch (e) { console.warn('Sync init:', e.message); }
+    },
+
+    setStatus(text, online) {
+        const el = document.getElementById('syncStatus');
+        if (el) { el.textContent = text; el.className = 'sync-status ' + (online ? 'online' : 'offline'); }
+    },
+
+    renderUI() {
+        const signedIn = !!this.user;
+        document.getElementById('authSection').classList.toggle('hidden', signedIn);
+        document.getElementById('signedInSection').classList.toggle('hidden', !signedIn);
+        if (signedIn) this.setStatus(`Signed in as ${this.user.email} — auto-push enabled`, true);
+        else this.setStatus(this.cfg ? 'Configured. Sign in to sync.' : 'Not configured — enter your Supabase URL and anon key below.', false);
+    },
+
+    async signUp() {
+        try {
+            const c = await this.getClient();
+            const email = document.getElementById('syncEmail').value.trim();
+            const password = document.getElementById('syncPassword').value;
+            if (password.length < 6) { Toast.show('Password must be at least 6 characters.', { isError: true }); return; }
+            const { data, error } = await c.auth.signUp({ email, password });
+            if (error) throw error;
+            if (data.session) { this.user = data.user; this.renderUI(); Toast.show('Account created. Syncing…'); await this.push(); }
+            else Toast.show('Account created — check your email to confirm, then sign in.');
+        } catch (e) { Toast.show(e.message, { isError: true }); }
+    },
+
+    async signIn() {
+        try {
+            const c = await this.getClient();
+            const { data, error } = await c.auth.signInWithPassword({
+                email: document.getElementById('syncEmail').value.trim(),
+                password: document.getElementById('syncPassword').value
+            });
+            if (error) throw error;
+            this.user = data.user;
+            this.renderUI();
+            Toast.show('Signed in. Checking for newer cloud data…');
+            await this.pull(false);
+        } catch (e) { Toast.show(e.message, { isError: true }); }
+    },
+
+    async signOut() {
+        try { await (await this.getClient()).auth.signOut(); } catch (e) {}
+        this.user = null;
+        this.renderUI();
+        Toast.show('Signed out. Local data stays on this device.');
+    },
+
+    async push() {
+        if (!this.user) return false;
+        try {
+            const c = await this.getClient();
+            const { error } = await c.from('finance_state').upsert({
+                user_id: this.user.id,
+                data: Store.state,
+                updated_at: new Date().toISOString()
+            });
+            if (error) throw error;
+            Store.state.lastSyncAt = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(Store.state));
+            this._pushFailedOnce = false;
+            this.setStatus(`Synced ✓ (${new Date().toLocaleTimeString()})`, true);
+            return true;
+        } catch (e) {
+            if (!this._pushFailedOnce) { Toast.show('Cloud push failed: ' + e.message, { isError: true }); this._pushFailedOnce = true; }
+            this.setStatus('Push failed — will retry on next change. ' + e.message, false);
+            return false;
+        }
+    },
+
+    schedulePush() {
+        if (!this.user) return;
+        clearTimeout(this._pushTimer);
+        this._pushTimer = setTimeout(() => this.push(), 5000);
+    },
+
+    async pull(manual = true) {
+        if (!this.user) return;
+        try {
+            const c = await this.getClient();
+            const { data, error } = await c.from('finance_state').select('data, updated_at').eq('user_id', this.user.id).maybeSingle();
+            if (error) throw error;
+            if (!data?.data) {
+                if (manual) Toast.show('No cloud data yet — use "Push" to upload this device\'s data.');
+                return;
+            }
+            const remoteNewer = !Store.state.lastSyncAt || new Date(data.updated_at) > new Date(Store.state.lastSyncAt);
+            if (!remoteNewer) { if (manual) Toast.show('Cloud data is not newer than this device.'); return; }
+
+            const doRestore = () => {
+                Store.snapshot();
+                Store.state = { ...Store.state, ...data.data };
+                Store.migrate(Store.state, Store.state._version || 1);
+                Store.normalize(Store.state);
+                Store.state.lastSyncAt = data.updated_at;
+                Store.recalcBalances();
+                Store.save(['all']);
+                Toast.show('Cloud data restored to this device.', { actionLabel: 'Undo', onAction: () => Store.undo() });
+            };
+            if (manual) { if (confirm('Replace THIS DEVICE\'s data with the cloud copy?')) doRestore(); }
+            else doRestore();
+        } catch (e) {
+            Toast.show('Cloud pull failed: ' + e.message, { isError: true });
+        }
+    }
+};
+
+/* ================= APP ================= */
+const App = {
+    activeTab: 'dashboard',
+    txLimit: PAGE_SIZE,
+    _filterCache: null,
+    editingTxId: null,
+
+    $: id => document.getElementById(id),
+
+    /* ---------- memoized filtering ---------- */
+    filteredTransactions() {
+        const search = (this.$('searchTx')?.value || '').toLowerCase().trim();
+        const acc = this.$('filterAccount')?.value || 'all';
+        const cat = this.$('filterCategory')?.value || 'all';
+        const type = this.$('filterType')?.value || 'all';
+        const { from, to } = Store.state.dateFilter;
+        const key = JSON.stringify([Store.revision, from, to, search, acc, cat, type]);
+        if (this._filterCache?.key === key) return this._filterCache.result;
+
+        const result = Store.state.transactions.filter(t => {
+            if (!Utils.inRange(t.date, from, to)) return false;
+            if (search && !t.desc.toLowerCase().includes(search)) return false;
+            if (acc !== 'all' && t.accountId !== acc) return false;
+            if (cat !== 'all' && t.category !== cat && !(t.splits && t.splits.some(s => s.categoryId === cat))) return false;
+            if (type !== 'all' && t.type !== type) return false;
+            return true;
+        }).sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
+
+        this._filterCache = { key, result };
+        return result;
+    },
+
+    totals(txs) {
+        const spent = Utils.roundMoney(Math.abs(txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)));
+        const income = Utils.roundMoney(txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0));
+        const savingsRate = income > 0 ? Math.round(((income - spent) / income) * 100) : 0;
+        return { spent, income, net: Utils.roundMoney(income - spent), savingsRate };
+    },
+
+    /** Category spend honoring splits */
+    spentForCategory(txs, catId) {
+        let total = 0;
+        txs.forEach(t => {
+            if (t.type !== 'expense') return;
+            if (t.splits) t.splits.forEach(s => { if (s.categoryId === catId) total += s.amount; });
+            else if (t.category === catId) total += Math.abs(t.amount);
+        });
+        return Utils.roundMoney(total);
+    },
+
+    chartBar(value, max, label, cls = '') {
+        const pct = max > 0 ? Math.max((value / max) * 100, 1.5) : 2;
+        return `<div class="chart-col ${cls}" style="height:${pct}%" title="${Utils.escapeHtml(label)}: ${Utils.fmtMoney(value)}"><div class="chart-label">${Utils.escapeHtml(label)}</div></div>`;
+    },
+
+    /* ---------- init ---------- */
+    init() {
+        Store.init();
+        document.body.classList.toggle('dark-mode', Store.state.theme === 'dark');
+        document.body.classList.toggle('privacy-mode', Store.state.privacyMode);
+        this.$('toggleTheme').textContent = Store.state.theme === 'dark' ? '☀️' : '🌙';
+
+        const preset = Store.state.dateFilter.preset || 'thisMonth';
+        if (preset !== 'custom') Store.state.dateFilter = { ...Utils.getDateRange(preset), preset };
+        this.syncDateInputs();
+
+        this.bindEvents();
+        this.bindShortcuts();
+        this.render(['all']);
+        Sync.init();
+        setTimeout(() => Store.processRecurring(), 400);
+
+        if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+            navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW registration:', e));
+        }
+    },
+
+    syncDateInputs() {
+        const { from, to, preset } = Store.state.dateFilter;
+        this.$('dateFrom').value = from || '';
+        this.$('dateTo').value = to || '';
+        document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('active', b.dataset.preset === preset));
+    },
+
+    bindShortcuts() {
+        document.addEventListener('keydown', e => {
+            if (e.target.matches('input, select, textarea') || e.target.isContentEditable || e.metaKey || e.ctrlKey || e.altKey) return;
+            if (e.key === 'n' || e.key === 'N') this.openTxModal();
+            else if (e.key === '/') { e.preventDefault(); this.$('searchTx').focus(); }
+            else if (e.key === 't' || e.key === 'T') { Store.toggleTheme(); this.$('toggleTheme').textContent = Store.state.theme === 'dark' ? '☀️' : '🌙'; }
+            else if (e.key === 'p' || e.key === 'P') Store.togglePrivacy();
+        });
+    },
+
+    /* ---------- events ---------- */
+    bindEvents() {
+        const $ = id => this.$(id);
+
+        document.querySelectorAll('.nav-item').forEach(btn =>
+            btn.addEventListener('click', () => this.switchTab(btn.dataset.tab)));
+
+        $('applyDateFilter').addEventListener('click', () => {
+            const from = $('dateFrom').value || null, to = $('dateTo').value || null;
+            if (from && to && from > to) { Toast.show('"From" date must be before "To" date.', { isError: true }); return; }
+            Store.setDateFilter(from, to, 'custom');
+            this.syncDateInputs();
+        });
+        $('clearDateFilter').addEventListener('click', () => {
+            Store.setDateFilter(null, null, 'all');
+            this.syncDateInputs();
+        });
+        document.querySelectorAll('[data-preset]').forEach(btn =>
+            btn.addEventListener('click', () => {
+                const r = Utils.getDateRange(btn.dataset.preset);
+                Store.setDateFilter(r.from, r.to, btn.dataset.preset);
+                this.syncDateInputs();
+            }));
+
+        $('toggleTheme').addEventListener('click', () => {
+            Store.toggleTheme();
+            $('toggleTheme').textContent = Store.state.theme === 'dark' ? '☀️' : '🌙';
+        });
+        $('togglePrivacy').addEventListener('click', () => Store.togglePrivacy());
+        $('syncBtn').addEventListener('click', () => { Sync.loadCfg(); if (Sync.cfg) { $('supabaseUrl').value = Sync.cfg.url; $('supabaseKey').value = Sync.cfg.key; } Sync.renderUI(); $('syncModal').showModal(); });
+        $('importExportBtn').addEventListener('click', () => { this.refreshImportOptions(); $('importExportModal').showModal(); });
+        $('backupBtn').addEventListener('click', () => $('backupModal').showModal());
+        document.querySelectorAll('[data-close]').forEach(b =>
+            b.addEventListener('click', () => $(b.dataset.close).close()));
+
+        /* --- Transaction modal --- */
+        $('openAddTxModal').addEventListener('click', () => this.openTxModal());
+        [['typeExpense','expense'],['typeIncome','income'],['typeTransfer','transfer_out']].forEach(([id, type]) =>
+            $(id).addEventListener('click', () => this.setTxTypeUI(type)));
+        $('addSplitBtn').addEventListener('click', () => this.addSplitRow());
+        $('txForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const splits = this.collectSplits();
+            if (splits === null) return; // validation error already toasted
+            const data = {
+                type: $('txType').value,
+                amount: $('txAmount').value,
+                date: $('txDate').value,
+                desc: $('txDesc').value,
+                accountId: $('txAccount').value,
+                transferTo: $('txTransferTo').value,
+                category: $('txCategory').value,
+                splits: splits || undefined,
+                reconciled: $('txReconciled').checked
+            };
+            const ok = this.editingTxId
+                ? Store.updateTransaction(this.editingTxId, data)
+                : Store.addTransaction(data);
+            if (ok) {
+                $('txModal').close();
+                Toast.show(this.editingTxId ? 'Transaction updated.' : 'Transaction added.');
+                this.editingTxId = null;
+            }
+        });
+
+        /* --- Transactions tab --- */
+        const resetPaging = () => { this.txLimit = PAGE_SIZE; this.renderTransactions(); };
+        $('searchTx').addEventListener('input', resetPaging);
+        ['filterAccount','filterCategory','filterType'].forEach(id => $(id).addEventListener('change', resetPaging));
+        $('showMoreTx').addEventListener('click', () => { this.txLimit += PAGE_SIZE; this.renderTransactions(); });
+        $('txTableBody').addEventListener('click', e => {
+            const rec = e.target.closest('[data-reconcile]');
+            if (rec) { Store.toggleReconciled(rec.dataset.reconcile); return; }
+            const edit = e.target.closest('[data-edit-tx]');
+            if (edit) { this.openEditTx(edit.dataset.editTx); return; }
+            const del = e.target.closest('[data-del-tx]');
+            if (del) Store.deleteTransaction(del.dataset.delTx);
+        });
+        $('txTableBody').addEventListener('keydown', e => {
+            const rec = e.target.closest('[data-reconcile]');
+            if (rec && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); Store.toggleReconciled(rec.dataset.reconcile); }
+        });
+
+        /* --- Accounts --- */
+        $('addAccountBtn').addEventListener('click', () => {
+            $('accountForm').reset();
+            $('accountId').value = '';
+            $('accountModalTitle').textContent = 'Add Account';
+            this.setColorPicker('accountColorPicker', 'accountColor', COLOR_PALETTE[0]);
+            $('accountModal').showModal();
+        });
+        $('recalcBalancesBtn').addEventListener('click', () => {
+            Store.recalcBalances();
+            Store.save(['accounts', 'dashboard']);
+            Toast.show('Balances recalculated from opening balance + transactions.');
+        });
+        $('accountForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const goal = $('accountGoal').value, threshold = $('accountThreshold').value;
+            if (goal !== '' && parseFloat(goal) < 0) { Toast.show('Goal balance cannot be negative.', { isError: true }); return; }
+            if (threshold !== '' && parseFloat(threshold) < 0) { Toast.show('Low balance alert cannot be negative.', { isError: true }); return; }
+            const ok = Store.saveAccount({
+                id: $('accountId').value || undefined,
+                name: $('accountName').value,
+                type: $('accountType').value,
+                institution: $('accountInstitution').value,
+                balance: $('accountBalance').value,
+                goalBalance: goal, lowBalanceThreshold: threshold,
+                color: $('accountColor').value
+            });
+            if (ok) { $('accountModal').close(); Toast.show('Account saved.'); }
+        });
+        $('accountsList').addEventListener('click', e => {
+            const edit = e.target.closest('[data-edit-acc]');
+            if (edit) { this.openEditAccount(edit.dataset.editAcc); return; }
+            const del = e.target.closest('[data-del-acc]');
+            if (del) Store.deleteAccount(del.dataset.delAcc);
+        });
+
+        /* --- Planning --- */
+        $('monthlyIncome').addEventListener('change', e => {
+            const v = parseFloat(e.target.value);
+            if (isNaN(v) || v < 0) { e.target.value = Store.state.income; Toast.show('Income must be non-negative.', { isError: true }); return; }
+            Store.state.income = Utils.roundMoney(v);
+            Store.save(['planning', 'dashboard']);
+        });
+        $('categoryInputs').addEventListener('change', e => {
+            if (e.target.dataset.catLimit !== undefined) Store.updateBudgetLimit(e.target.dataset.catLimit, e.target.value);
+        });
+        $('addCategoryForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const editing = $('editingCatId').value;
+            const ok = editing
+                ? Store.updateCategory(editing, { name: $('newCatName').value, group: $('newCatGroup').value, color: $('newCatColor').value })
+                : Store.addCategory($('newCatName').value, $('newCatGroup').value, $('newCatColor').value);
+            if (ok) {
+                e.target.reset();
+                $('editingCatId').value = '';
+                $('categoryFormTitle').textContent = 'Manage Categories';
+                $('categorySubmitBtn').textContent = 'Create';
+                $('categoryCancelEdit').classList.add('hidden');
+                this.setColorPicker('newCatColorPicker', 'newCatColor', COLOR_PALETTE[0]);
+                this.render(['planning']);
+                Toast.show(editing ? 'Category updated.' : 'Category created.');
+            }
+        });
+        $('categoryCancelEdit').addEventListener('click', () => {
+            $('editingCatId').value = '';
+            $('addCategoryForm').reset();
+            $('categoryFormTitle').textContent = 'Manage Categories';
+            $('categorySubmitBtn').textContent = 'Create';
+            $('categoryCancelEdit').classList.add('hidden');
+            this.setColorPicker('newCatColorPicker', 'newCatColor', COLOR_PALETTE[0]);
+        });
+        $('categoryList').addEventListener('click', e => {
+            const edit = e.target.closest('[data-edit-cat]');
+            if (edit) {
+                const cat = Store.categoryById(edit.dataset.editCat);
+                if (!cat) return;
+                $('editingCatId').value = cat.id;
+                $('newCatName').value = cat.name;
+                $('newCatGroup').value = cat.group;
+                this.setColorPicker('newCatColorPicker', 'newCatColor', cat.color);
+                $('categoryFormTitle').textContent = 'Edit Category';
+                $('categorySubmitBtn').textContent = 'Update';
+                $('categoryCancelEdit').classList.remove('hidden');
+                $('newCatName').focus();
+                return;
+            }
+            const del = e.target.closest('[data-del-cat]');
+            if (del) Store.deleteCategory(del.dataset.delCat);
+        });
+        $('categoryList').addEventListener('change', e => {
+            const cb = e.target.closest('[data-rollover]');
+            if (cb) Store.updateCategory(cb.dataset.rollover, { rollover: cb.checked });
+        });
+
+        /* --- Recurring --- */
+        $('addRecurringBtn').addEventListener('click', () => {
+            $('recurringForm').reset();
+            $('recurringId').value = '';
+            $('recurringModalTitle').textContent = 'Add Recurring';
+            $('recurringStartDate').valueAsDate = new Date();
+            this.refreshRecurringOptions();
+            this.setRecurringTypeUI('expense');
+            $('recurringModal').showModal();
+        });
+        $('recurringFrequency').addEventListener('change', e =>
+            $('recurringDayContainer').classList.toggle('hidden', e.target.value !== 'monthly'));
+        $('recurringType').addEventListener('change', e => this.setRecurringTypeUI(e.target.value));
+        $('recurringForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const ok = Store.saveRecurring({
+                id: $('recurringId').value || undefined,
+                desc: $('recurringDesc').value,
+                amount: $('recurringAmount').value,
+                type: $('recurringType').value,
+                accountId: $('recurringAccount').value,
+                transferTo: $('recurringTransferTo').value,
+                category: $('recurringCategory').value,
+                frequency: $('recurringFrequency').value,
+                day: $('recurringDay').value,
+                startDate: $('recurringStartDate').value,
+                active: $('recurringActive').checked
+            });
+            if (ok) { $('recurringModal').close(); Toast.show('Recurring rule saved.'); }
+        });
+        $('recurringList').addEventListener('click', e => {
+            const edit = e.target.closest('[data-edit-rec]');
+            if (edit) { this.openEditRecurring(edit.dataset.editRec); return; }
+            const del = e.target.closest('[data-del-rec]');
+            if (del) Store.deleteRecurring(del.dataset.delRec);
+            const tog = e.target.closest('[data-toggle-rec]');
+            if (tog) Store.toggleRecurringActive(tog.dataset.toggleRec);
+        });
+
+        /* --- Compare --- */
+        $('runComparisonBtn').addEventListener('click', () => this.runComparison());
+
+        /* --- Exports --- */
+        $('exportFilteredCSV').addEventListener('click', () => { this.exportTransactionsCSV(this.filteredTransactions(), 'transactions_filtered'); $('importExportModal').close(); });
+        $('exportAllCSV').addEventListener('click', () => { this.exportTransactionsCSV(Store.state.transactions, 'transactions_all'); $('importExportModal').close(); });
+        $('exportAccountsCSV').addEventListener('click', () => { this.exportAccountsCSV(); $('importExportModal').close(); });
+        $('exportMonthlyReport').addEventListener('click', () => { this.exportMonthlyReport(); $('importExportModal').close(); });
+
+        /* --- CSV import --- */
+        $('importCsvBtn').addEventListener('click', () => this.importCSV());
+
+        /* --- Backup --- */
+        $('exportBackupBtn').addEventListener('click', () => {
+            const backup = { app: 'zenbudget_pro', version: STATE_VERSION, exportedAt: new Date().toISOString(), data: Store.state };
+            Utils.download(`zenbudget_backup_${Utils.todayStr()}.json`, JSON.stringify(backup, null, 2), 'application/json');
+            $('backupModal').close();
+            Toast.show('Backup downloaded.');
+        });
+        $('importBackupFile').addEventListener('change', e => {
+            const file = e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    const data = parsed.app === 'zenbudget_pro' ? parsed.data : parsed;
+                    if (!data || !Array.isArray(data.transactions) || !Array.isArray(data.accounts)) throw new Error('Invalid backup structure');
+                    if (!confirm('Restore this backup? Current data will be replaced (undoable).')) return;
+                    Store.snapshot();
+                    Store.state = { ...Store.state, ...data };
+                    Store.migrate(Store.state, Store.state._version || 1);
+                    Store.normalize(Store.state);
+                    Store.recalcBalances();
+                    Store.save(['all']);
+                    $('backupModal').close();
+                    Toast.show('Backup restored.', { actionLabel: 'Undo', onAction: () => Store.undo() });
+                } catch (err) {
+                    console.error(err);
+                    Toast.show('Invalid backup file.', { isError: true });
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        /* --- Sync buttons --- */
+        $('saveSupabaseCfg').addEventListener('click', () => {
+            Sync.saveCfg($('supabaseUrl').value, $('supabaseKey').value);
+            Toast.show('Connection saved.');
+            Sync.renderUI();
+        });
+        $('signInBtn').addEventListener('click', () => Sync.signIn());
+        $('signUpBtn').addEventListener('click', () => Sync.signUp());
+        $('signOutBtn').addEventListener('click', () => Sync.signOut());
+        $('pushNowBtn').addEventListener('click', async () => { Toast.show((await Sync.push()) ? 'Pushed to cloud ✓' : 'Push failed.', { isError: false }); });
+        $('pullNowBtn').addEventListener('click', () => Sync.pull(true));
+    },
+
+    /* ---------- transaction modal helpers ---------- */
+    openTxModal() {
+        const $ = this.$;
+        $('txForm').reset();
+        this.editingTxId = null;
+        $('txId').value = '';
+        $('txModalTitle').textContent = 'Add Transaction';
+        $('txType').value = 'expense';
+        $('txDate').valueAsDate = new Date();
+        this.setTxTypeUI('expense');
+        this.clearSplitRows();
+        this.refreshTxModalOptions();
+        $('txModal').showModal();
+    },
+
+    openEditTx(id) {
+        const tx = Store.state.transactions.find(t => t.id === id);
+        if (!tx) return;
+        const $ = this.$;
+        this.refreshTxModalOptions();
+        this.editingTxId = id;
+        $('txId').value = id;
+        $('txModalTitle').textContent = 'Edit Transaction';
+        $('txAmount').value = Math.abs(tx.amount);
+        $('txDate').value = tx.date;
+        $('txDesc').value = tx.desc;
+        $('txAccount').value = tx.accountId;
+        $('txTransferTo').value = tx.transferTo || '';
+        $('txCategory').value = tx.category || '';
+        $('txReconciled').checked = !!tx.reconciled;
+        const uiType = tx.type === 'transfer_out' ? 'transfer_out' : tx.type; // transfer_in edits as its pair
+        $('txType').value = uiType;
+        this.setTxTypeUI(uiType);
+        this.clearSplitRows();
+        if (tx.splits) tx.splits.forEach(s => this.addSplitRow(s.categoryId, s.amount));
+        $('txModal').showModal();
+    },
+
+    setTxTypeUI(type) {
+        const $ = this.$;
+        $('txType').value = type;
+        [['typeExpense','expense'],['typeIncome','income'],['typeTransfer','transfer_out']].forEach(([id, t]) => {
+            $(id).classList.toggle('btn-primary', t === type);
+            $(id).classList.toggle('btn-outline', t !== type);
+        });
+        $('categorySelectContainer').classList.toggle('hidden', type !== 'expense');
+        $('transferToContainer').classList.toggle('hidden', type !== 'transfer_out');
+        $('splitsContainer').classList.toggle('hidden', type !== 'expense');
+        if (type === 'transfer_out') {
+            const src = $('txAccount').value;
+            [...$('txTransferTo').options].forEach(o => { o.disabled = o.value === src; });
+        }
+    },
+
+    refreshTxModalOptions() {
+        const opts = Store.state.accounts.map(a =>
+            `<option value="${a.id}">${Utils.escapeHtml(ACCOUNT_ICONS[a.type]||'💰')} ${Utils.escapeHtml(a.name)}</option>`).join('');
+        this.$('txAccount').innerHTML = opts;
+        this.$('txTransferTo').innerHTML = opts;
+        this.$('txCategory').innerHTML = Store.state.categories.map(c =>
+            `<option value="${c.id}">${Utils.escapeHtml(c.name)}</option>`).join('');
+    },
+
+    refreshRecurringOptions() {
+        const opts = Store.state.accounts.map(a => `<option value="${a.id}">${Utils.escapeHtml(a.name)}</option>`).join('');
+        this.$('recurringAccount').innerHTML = opts;
+        this.$('recurringTransferTo').innerHTML = opts;
+        this.$('recurringCategory').innerHTML = Store.state.categories.map(c =>
+            `<option value="${c.id}">${Utils.escapeHtml(c.name)}</option>`).join('');
+    },
+
+    setRecurringTypeUI(type) {
+        const $ = this.$;
+        $('recurringCategoryContainer').classList.toggle('hidden', type !== 'expense');
+        $('recurringTransferToContainer').classList.toggle('hidden', type !== 'transfer');
+        if (type === 'transfer') {
+            const src = $('recurringAccount').value;
+            [...$('recurringTransferTo').options].forEach(o => { o.disabled = o.value === src; });
+        }
+    },
+
+    /* ---------- splits ---------- */
+    addSplitRow(categoryId = '', amount = '') {
+        const row = document.createElement('div');
+        row.className = 'split-row';
+        const catOptions = Store.state.categories.map(c =>
+            `<option value="${c.id}" ${c.id === categoryId ? 'selected' : ''}>${Utils.escapeHtml(c.name)}</option>`).join('');
+        row.innerHTML = `
+            <select class="split-cat" aria-label="Split category">${catOptions}</select>
+            <input type="number" class="split-amt" step="0.01" min="0" placeholder="0.00" value="${amount}" aria-label="Split amount">
+            <button type="button" class="btn btn-danger btn-sm" aria-label="Remove split">✕</button>`;
+        row.querySelector('button').addEventListener('click', () => { row.remove(); this.updateSplitInfo(); });
+        row.querySelector('.split-amt').addEventListener('input', () => this.updateSplitInfo());
+        this.$('splitRows').appendChild(row);
+        this.updateSplitInfo();
+    },
+    clearSplitRows() { this.$('splitRows').innerHTML = ''; this.updateSplitInfo(); },
+    collectSplits() {
+        const rows = [...this.$('splitRows').querySelectorAll('.split-row')];
+        if (rows.length === 0) return null;
+        return rows.map(r => ({ categoryId: r.querySelector('.split-cat').value, amount: r.querySelector('.split-amt').value }));
+    },
+    updateSplitInfo() {
+        const rows = [...this.$('splitRows').querySelectorAll('.split-row')];
+        const total = Utils.roundMoney(rows.reduce((s, r) => s + (parseFloat(r.querySelector('.split-amt').value) || 0), 0));
+        const txAmt = parseFloat(this.$('txAmount').value) || 0;
+        const el = this.$('splitSumInfo');
+        if (rows.length === 0) { el.textContent = ''; return; }
+        const diff = Utils.roundMoney(txAmt - total);
+        el.textContent = `Split total: ${Utils.fmtMoney(total)} of ${Utils.fmtMoney(txAmt)}` +
+            (Math.abs(diff) < 0.005 ? ' ✓' : ` — ${diff > 0 ? 'under' : 'over'} by ${Utils.fmtMoney(Math.abs(diff))}`);
+    },
+
+    setColorPicker(pickerId, inputId, selected) {
+        const picker = this.$(pickerId), input = this.$(inputId);
+        picker.innerHTML = '';
+        COLOR_PALETTE.forEach(color => {
+            const div = document.createElement('div');
+            div.className = 'color-option' + (color === selected ? ' selected' : '');
+            div.style.background = color;
+            div.setAttribute('role', 'button');
+            div.setAttribute('tabindex', '0');
+            div.setAttribute('aria-label', `Select color ${color}`);
+            const pick = () => {
+                input.value = color;
+                picker.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                div.classList.add('selected');
+            };
+            div.addEventListener('click', pick);
+            div.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+            picker.appendChild(div);
+        });
+        input.value = selected;
+    },
+
+    openEditAccount(id) {
+        const acc = Store.accountById(id);
+        if (!acc) return;
+        const $ = this.$;
+        $('accountId').value = acc.id;
+        $('accountName').value = acc.name;
+        $('accountType').value = acc.type;
+        $('accountInstitution').value = acc.institution || '';
+        $('accountBalance').value = acc.openingBalance;
+        $('accountGoal').value = acc.goalBalance ?? '';
+        $('accountThreshold').value = acc.lowBalanceThreshold ?? '';
+        $('accountModalTitle').textContent = 'Edit Account';
+        this.setColorPicker('accountColorPicker', 'accountColor', acc.color);
+        $('accountModal').showModal();
+    },
+
+    openEditRecurring(id) {
+        const r = Store.state.recurring.find(x => x.id === id);
+        if (!r) return;
+        const $ = this.$;
+        this.refreshRecurringOptions();
+        $('recurringId').value = r.id;
+        $('recurringDesc').value = r.desc;
+        $('recurringAmount').value = r.amount;
+        $('recurringType').value = r.type;
+        $('recurringAccount').value = r.accountId;
+        $('recurringTransferTo').value = r.transferTo || '';
+        $('recurringCategory').value = r.category || '';
+        $('recurringFrequency').value = r.frequency;
+        $('recurringDay').value = r.day;
+        $('recurringStartDate').value = r.startDate;
+        $('recurringActive').checked = r.active;
+        $('recurringDayContainer').classList.toggle('hidden', r.frequency !== 'monthly');
+        this.setRecurringTypeUI(r.type);
+        $('recurringModalTitle').textContent = 'Edit Recurring';
+        $('recurringModal').showModal();
+    },
+
+    switchTab(tab) {
+        this.activeTab = tab;
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== tab));
+        this.render([tab]);
+    },
+
+    /* ---------- render dispatcher ---------- */
+    render(sections) {
+        const map = {
+            dashboard: () => this.renderDashboard(),
+            accounts: () => this.renderAccounts(),
+            transactions: () => this.renderTransactions(),
+            planning: () => this.renderPlanning(),
+            insights: () => this.renderInsights(),
+            recurring: () => this.renderRecurring(),
+            compare: () => {}
+        };
+        if (sections.includes('all')) {
+            this.refreshDropdowns();
+            Object.keys(map).forEach(k => { try { map[k](); } catch (e) { console.error(`Render ${k}:`, e); } });
+            this.$('monthlyIncome').value = Store.state.income;
+        } else {
+            if (sections.includes('transactions')) this.refreshDropdowns();
+            sections.forEach(s => { try { map[s]?.(); } catch (e) { console.error(`Render ${s}:`, e); } });
+        }
+    },
+
+    refreshDropdowns() {
+        const accSel = this.$('filterAccount'), catSel = this.$('filterCategory');
+        const prevAcc = accSel.value, prevCat = catSel.value;
+        accSel.innerHTML = '<option value="all">All Accounts</option>' + Store.state.accounts.map(a =>
+            `<option value="${a.id}">${Utils.escapeHtml(a.name)}</option>`).join('');
+        catSel.innerHTML = '<option value="all">All Categories</option>' + Store.state.categories.map(c =>
+            `<option value="${c.id}">${Utils.escapeHtml(c.name)}</option>`).join('');
+        accSel.value = [...accSel.options].some(o => o.value === prevAcc) ? prevAcc : 'all';
+        catSel.value = [...catSel.options].some(o => o.value === prevCat) ? prevCat : 'all';
+    },
+
+    /* ---------- DASHBOARD ---------- */
+    renderDashboard() {
+        const $ = this.$;
+        const txs = this.filteredTransactions();
+        const { spent, income, net, savingsRate } = this.totals(txs);
+
+        $('dashNetWorth').textContent = Utils.fmtMoney(Store.netWorth());
+        $('dashLiquid').textContent = Utils.fmtMoney(Store.liquidAssets());
+        $('dashTotalIncome').textContent = Utils.fmtMoney(income);
+        $('dashTotalSpent').textContent = Utils.fmtMoney(spent);
+        $('dashNet').textContent = Utils.fmtMoney(net);
+        $('dashNet').className = 'text-xl private-data ' + (net >= 0 ? 'text-success' : 'text-danger');
+        $('dashSavingsRate').textContent = income > 0 ? `${savingsRate}%` : '—';
+
+        // Onboarding when brand new
+        $('onboarding').innerHTML = (Store.state.accounts.length === 0 && Store.state.transactions.length === 0) ? `
+            <div class="card mb-4">
+                <h3>👋 Welcome to ZenBudget Pro</h3>
+                <div class="onboarding-step mt-4"><div class="onboarding-num">1</div><div><strong>Add an account</strong> — your bank, wallet, or credit card. <button class="btn btn-primary btn-sm" onclick="document.getElementById('addAccountBtn').click()">Add Account</button></div></div>
+                <div class="onboarding-step"><div class="onboarding-num">2</div><div><strong>Add your first transaction</strong> — tap the <kbd>+</kbd> button or press <kbd>N</kbd> anywhere.</div></div>
+                <div class="onboarding-step"><div class="onboarding-num">3</div><div><strong>Set budgets</strong> in the Planning tab, then automate bills under Recurring.</div></div>
+                <p class="text-xs mt-4">Shortcuts: <kbd>N</kbd> new transaction · <kbd>/</kbd> search · <kbd>T</kbd> theme · <kbd>P</kbd> privacy</p>
+            </div>` : '';
+
+        // Alerts
+        const alertParts = [];
+        Store.state.categories.forEach(cat => {
+            if (cat.limit <= 0) return;
+            const s = this.spentForCategory(txs, cat.id);
+            if (s > cat.limit) alertParts.push(`<div class="alert alert-danger"><strong>⚠️ Over budget:</strong> ${Utils.escapeHtml(cat.name)} exceeded by ${Utils.fmtMoney(s - cat.limit)}</div>`);
+            else if (s >= cat.limit * 0.9) alertParts.push(`<div class="alert alert-warning"><strong>⚠️ Near limit:</strong> ${Utils.escapeHtml(cat.name)} at ${Math.round((s/cat.limit)*100)}% of budget</div>`);
+        });
+        Store.state.accounts.forEach(acc => {
+            if (acc.lowBalanceThreshold != null && acc.balance < acc.lowBalanceThreshold)
+                alertParts.push(`<div class="alert alert-warning"><strong>💰 Low balance:</strong> ${Utils.escapeHtml(acc.name)} — ${Utils.fmtMoney(acc.balance)}</div>`);
+        });
+        $('budgetAlerts').innerHTML = alertParts.join('');
+
+        // Budget bars (with rollover)
+        const budgetCats = Store.state.categories.filter(c => c.limit > 0);
+        $('budgetBars').innerHTML = budgetCats.length === 0
+            ? '<div class="empty-state">No budgets set. Add limits in the Planning tab.</div>'
+            : budgetCats.map(cat => {
+                const s = this.spentForCategory(txs, cat.id);
+                let carry = 0;
+                if (cat.rollover) {
+                    const prevKey = Utils.prevMonthKey(Utils.monthKey(Utils.todayStr()));
+                    const prevSpent = this.spentForCategory(
+                        Store.state.transactions.filter(t => Utils.monthKey(t.date) === prevKey), cat.id);
+                    carry = Math.max(Utils.roundMoney(cat.limit - prevSpent), 0);
+                }
+                const effective = Utils.roundMoney(cat.limit + carry);
+                const pct = effective > 0 ? Math.min((s / effective) * 100, 100) : 0;
+                const over = s > effective;
+                const fill = over ? 'bg-red' : pct >= 80 ? 'bg-yellow' : 'bg-green';
+                return `
+                    <div>
+                        <div class="flex flex-between text-sm mb-2">
+                            <span><span class="badge ${GROUP_BADGES[cat.group]}">${Utils.escapeHtml(cat.name)}</span>${carry > 0 ? ` <span class="text-xs">+${Utils.fmtMoney(carry)} rollover</span>` : ''}</span>
+                            <span class="private-data">${Utils.fmtMoney(s)} / ${Utils.fmtMoney(effective)}</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill ${fill}" style="width:${pct}%"></div></div>
+                    </div>`;
+            }).join('');
+
+        // Recent transactions
+        $('recentList').innerHTML = txs.length === 0
+            ? '<div class="empty-state">No transactions in this period. Click + to add one.</div>'
+            : txs.slice(0, 6).map(t => {
+                const isExpense = t.type === 'expense' || t.type === 'transfer_out';
+                const badge = t.recurring ? '<span class="recurring-badge">↻</span>' : '';
+                const transfer = t.type.startsWith('transfer') ? '<span class="transfer-badge">⇄</span>' : '';
+                const split = t.splits ? `<span class="recurring-badge" style="background:var(--info);">split</span>` : '';
+                const catName = t.type === 'expense' ? Utils.escapeHtml(Store.categoryName(t.category)) : (t.type === 'income' ? 'Income' : 'Transfer');
+                return `
+                    <div class="flex flex-between gap-2">
+                        <div>
+                            <div>${Utils.escapeHtml(t.desc)}${badge}${transfer}${split}</div>
+                            <div class="text-xs">${Utils.fmtDate(t.date)} • ${Utils.escapeHtml(Store.accountName(t.accountId))} • ${catName}</div>
+                        </div>
+                        <div class="private-data ${isExpense ? 'text-danger' : 'text-success'}" style="white-space:nowrap;">${isExpense ? '−' : '+'}${Utils.fmtMoney(Math.abs(t.amount))}</div>
+                    </div>`;
+            }).join('');
+
+        // Account overview
+        $('accountSummary').innerHTML = Store.state.accounts.length === 0
+            ? '<div class="empty-state">No accounts yet. Add one in the Accounts tab.</div>'
+            : Store.state.accounts.map(acc => {
+                const low = acc.lowBalanceThreshold != null && acc.balance < acc.lowBalanceThreshold;
+                return `<div class="flex flex-between">
+                    <span>${ACCOUNT_ICONS[acc.type]||'💰'} ${Utils.escapeHtml(acc.name)}${low ? ' <span class="text-danger">⚠️</span>' : ''}</span>
+                    <span class="private-data ${acc.balance < 0 ? 'text-danger' : ''}">${Utils.fmtMoney(acc.balance)}</span>
+                </div>`;
+            }).join('');
+
+        // Monthly overview
+        const cal = $('monthlyCalendar');
+        cal.innerHTML = Utils.lastNMonthKeys(6).map(key => {
+            const t = this.totals(Store.state.transactions.filter(x => Utils.monthKey(x.date) === key));
+            const isCurrent = key === Utils.monthKey(Utils.todayStr());
+            return `<div class="month-item${isCurrent ? ' current' : ''}" data-month="${key}">
+                <div style="font-weight:600;">${Utils.monthLabel(key)}</div>
+                <div class="text-xs">Spent: <span class="private-data text-danger">${Utils.fmtMoney(t.spent)}</span></div>
+                <div class="text-xs">Income: <span class="private-data text-success">${Utils.fmtMoney(t.income)}</span></div>
+            </div>`;
+        }).join('');
+        cal.querySelectorAll('[data-month]').forEach(el =>
+            el.addEventListener('click', () => {
+                const key = el.dataset.month;
+                Store.setDateFilter(`${key}-01`, Utils.monthEnd(key), 'custom');
+                this.syncDateInputs();
+            }));
+
+        // Upcoming recurring (next 30 days)
+        const horizon = Utils.addDaysISO(Utils.todayStr(), 30);
+        const upcoming = Store.state.recurring
+            .filter(r => r.active)
+            .map(r => ({ r, next: Store.nextDueDate(r) }))
+            .filter(x => x.next && x.next <= horizon)
+            .sort((a, b) => a.next.localeCompare(b.next));
+        $('upcomingList').innerHTML = upcoming.length === 0
+            ? '<div class="empty-state">Nothing scheduled in the next 30 days.</div>'
+            : upcoming.map(({ r, next }) => `
+                <div class="flex flex-between">
+                    <span>${Utils.escapeHtml(r.desc)} <span class="text-xs">· ${Utils.escapeHtml(Store.accountName(r.accountId))}</span></span>
+                    <span class="text-sm private-data">${Utils.fmtDate(next)} · ${r.type === 'income' ? '+' : '−'}${Utils.fmtMoney(r.amount)}</span>
+                </div>`).join('');
+    },
+
+    /* ---------- ACCOUNTS ---------- */
+    renderAccounts() {
+        const $ = this.$;
+        const assets = Utils.roundMoney(Store.state.accounts.filter(a => a.balance > 0).reduce((s, a) => s + a.balance, 0));
+        const liabilities = Utils.roundMoney(Store.state.accounts.filter(a => a.balance < 0).reduce((s, a) => s + a.balance, 0));
+        const net = Utils.roundMoney(assets + liabilities);
+
+        $('totalAssets').textContent = Utils.fmtMoney(assets);
+        $('totalLiabilities').textContent = Utils.fmtMoney(Math.abs(liabilities));
+        $('netWorthDisplay').textContent = Utils.fmtMoney(net);
+        $('netWorthDisplay').className = 'text-xl private-data ' + (net >= 0 ? 'text-success' : 'text-danger');
+
+        const parts = [];
+        Store.state.accounts.forEach(acc => {
+            if (acc.lowBalanceThreshold != null && acc.balance < acc.lowBalanceThreshold)
+                parts.push(`<div class="alert alert-warning"><strong>⚠️</strong> ${Utils.escapeHtml(acc.name)} is below your low-balance threshold (${Utils.fmtMoney(acc.lowBalanceThreshold)})</div>`);
+            if (acc.goalBalance != null && acc.balance >= acc.goalBalance)
+                parts.push(`<div class="alert alert-success"><strong>🎉</strong> ${Utils.escapeHtml(acc.name)} reached its goal of ${Utils.fmtMoney(acc.goalBalance)}!</div>`);
+        });
+        $('accountAlerts').innerHTML = parts.join('');
+
+        $('accountsList').innerHTML = Store.state.accounts.length === 0
+            ? '<div class="empty-state">No accounts yet. Click "+ Add Account" to start.</div>'
+            : Store.state.accounts.map(acc => {
+                const low = acc.lowBalanceThreshold != null && acc.balance < acc.lowBalanceThreshold;
+                const goalPct = acc.goalBalance ? Math.min((acc.balance / acc.goalBalance) * 100, 100) : null;
+                return `
+                    <div class="account-card${low ? ' low-balance' : ''}">
+                        <div class="flex flex-between mb-2">
+                            <div class="flex gap-2">
+                                <div class="account-icon" style="background:${acc.color}22;color:${acc.color};">${ACCOUNT_ICONS[acc.type]||'💰'}</div>
+                                <div>
+                                    <div style="font-weight:600;">${Utils.escapeHtml(acc.name)}</div>
+                                    <div class="text-xs">${Utils.escapeHtml(acc.institution || acc.type)} · opening ${Utils.fmtMoney(acc.openingBalance)}</div>
+                                </div>
+                            </div>
+                            <span class="badge ${ACCOUNT_BADGES[acc.type]||''}">${Utils.escapeHtml(acc.type)}</span>
+                        </div>
+                        <div class="flex flex-between mb-2">
+                            <span class="text-sm">Balance:</span>
+                            <span class="private-data text-xl ${acc.balance < 0 ? 'text-danger' : ''}">${Utils.fmtMoney(acc.balance)}</span>
+                        </div>
+                        ${goalPct !== null ? `
+                            <div class="mb-2">
+                                <div class="flex flex-between text-xs mb-2"><span>Goal ${Utils.fmtMoney(acc.goalBalance)}</span><span>${goalPct.toFixed(0)}%</span></div>
+                                <div class="progress-track"><div class="progress-fill bg-info" style="width:${goalPct}%"></div></div>
+                            </div>` : ''}
+                        <div class="flex gap-2 mt-4">
+                            <button class="btn btn-outline btn-sm" style="flex:1;" data-edit-acc="${acc.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm" data-del-acc="${acc.id}">Delete</button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+        const positives = Store.state.accounts.filter(a => a.balance > 0).sort((a, b) => b.balance - a.balance);
+        const totalPos = positives.reduce((s, a) => s + a.balance, 0);
+        $('accountDistribution').innerHTML = positives.length === 0
+            ? '<div class="empty-state">No positive balances yet.</div>'
+            : positives.map(acc => {
+                const pct = (acc.balance / totalPos) * 100;
+                return `<div class="mb-4">
+                    <div class="flex flex-between text-sm mb-2">
+                        <span>${ACCOUNT_ICONS[acc.type]||'💰'} ${Utils.escapeHtml(acc.name)}</span>
+                        <span class="private-data">${pct.toFixed(1)}% · ${Utils.fmtMoney(acc.balance)}</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${acc.color};"></div></div>
+                </div>`;
+            }).join('');
+    },
+
+    /* ---------- TRANSACTIONS (paginated) ---------- */
+    renderTransactions() {
+        const txs = this.filteredTransactions();
+        const shown = txs.slice(0, this.txLimit);
+
+        this.$('txTableBody').innerHTML = shown.length === 0
+            ? '<tr><td colspan="7" class="empty-state">No transactions match the current filters.</td></tr>'
+            : shown.map(t => {
+                const catName = t.type === 'expense'
+                    ? (t.splits ? `Split (${t.splits.length})` : Utils.escapeHtml(Store.categoryName(t.category)))
+                    : (t.type === 'income' ? 'Income' : 'Transfer');
+                const isExpense = t.type === 'expense' || t.type === 'transfer_out';
+                const recurring = t.recurring ? '<span class="recurring-badge" title="Recurring">↻</span>' : '';
+                const transfer = t.type.startsWith('transfer') ? '<span class="transfer-badge" title="Transfer">⇄</span>' : '';
+                const splitDetail = t.splits
+                    ? `<div class="text-xs">${t.splits.map(s => `${Utils.escapeHtml(Store.categoryName(s.categoryId))}: ${Utils.fmtMoney(s.amount)}`).join(' · ')}</div>` : '';
+                return `<tr>
+                    <td>${Utils.fmtDate(t.date)}</td>
+                    <td>${Utils.escapeHtml(t.desc)}${recurring}${transfer}${splitDetail}</td>
+                    <td>${Utils.escapeHtml(Store.accountName(t.accountId))}</td>
+                    <td>${catName}</td>
+                    <td class="text-right private-data ${isExpense ? 'text-danger' : 'text-success'}">${isExpense ? '−' : '+'}${Utils.fmtMoney(Math.abs(t.amount))}</td>
+                    <td class="text-center"><span class="${t.reconciled ? 'reconciled-badge' : 'unreconciled-badge'}" role="button" tabindex="0" data-reconcile="${t.id}" title="Toggle cleared status (Enter)">${t.reconciled ? '✓ Cleared' : 'Pending'}</span></td>
+                    <td class="text-right" style="white-space:nowrap;">
+                        <button class="btn btn-outline btn-sm" data-edit-tx="${t.id}" aria-label="Edit transaction">✎</button>
+                        <button class="btn btn-danger btn-sm" data-del-tx="${t.id}" aria-label="Delete transaction">🗑</button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+        const { spent, income } = this.totals(txs);
+        this.$('transactionSummary').textContent =
+            `${txs.length} transaction(s) · Income ${Utils.fmtMoney(income)} · Spent ${Utils.fmtMoney(spent)}` +
+            (txs.length > shown.length ? ` · showing ${shown.length}` : '');
+        this.$('showMoreTx').classList.toggle('hidden', txs.length <= this.txLimit);
+    },
+
+    /* ---------- PLANNING ---------- */
+    renderPlanning() {
+        const $ = this.$;
+        $('monthlyIncome').value = Store.state.income;
+        $('categoryInputs').innerHTML = Store.state.categories.map(cat => `
+            <div class="flex flex-between gap-2">
+                <span class="badge ${GROUP_BADGES[cat.group]}" style="min-width:110px;text-align:left;">${Utils.escapeHtml(cat.name)}</span>
+                <input type="number" min="0" step="0.01" value="${cat.limit}" data-cat-limit="${cat.id}" style="width:130px;" aria-label="Budget limit for ${Utils.escapeHtml(cat.name)}">
+            </div>`).join('');
+        const assigned = Store.state.categories.reduce((s, c) => s + (c.limit || 0), 0);
+        $('unassignedMoney').textContent = Utils.fmtMoney(Utils.roundMoney(Store.state.income - assigned));
+
+        $('categoryList').innerHTML = Store.state.categories.map(cat => `
+            <div class="flex flex-between gap-2 flex-wrap">
+                <span><span class="badge ${GROUP_BADGES[cat.group]}">${Utils.escapeHtml(cat.group)}</span> ${Utils.escapeHtml(cat.name)}</span>
+                <span class="flex gap-2">
+                    <label class="text-xs" style="cursor:pointer;"><input type="checkbox" ${cat.rollover ? 'checked' : ''} data-rollover="${cat.id}" style="width:auto;"> rollover</label>
+                    <button class="btn btn-outline btn-sm" data-edit-cat="${cat.id}" aria-label="Edit ${Utils.escapeHtml(cat.name)}">✎</button>
+                    <button class="btn btn-danger btn-sm" data-del-cat="${cat.id}" aria-label="Delete ${Utils.escapeHtml(cat.name)}">🗑</button>
+                </span>
+            </div>`).join('');
+
+        if (!$('editingCatId').value) this.setColorPicker('newCatColorPicker', 'newCatColor', COLOR_PALETTE[0]);
+    },
+
+    /* ---------- INSIGHTS ---------- */
+    renderInsights() {
+        const $ = this.$;
+        const txs = this.filteredTransactions();
+
+        const groups = { needs: 0, wants: 0, savings: 0 };
+        txs.filter(t => t.type === 'expense').forEach(t => {
+            if (t.splits) t.splits.forEach(s => {
+                const cat = Store.categoryById(s.categoryId);
+                if (cat) groups[cat.group] = Utils.roundMoney(groups[cat.group] + s.amount);
+            });
+            else {
+                const cat = Store.categoryById(t.category);
+                if (cat) groups[cat.group] = Utils.roundMoney(groups[cat.group] + Math.abs(t.amount));
+            }
+        });
+        const groupTotal = groups.needs + groups.wants + groups.savings;
+        $('groupBreakdown').innerHTML = groupTotal === 0
+            ? '<div class="empty-state">No spending in this period.</div>'
+            : Object.entries(groups).map(([g, amt]) => {
+                const pct = (amt / groupTotal) * 100;
+                return `<div class="mb-4">
+                    <div class="flex flex-between text-sm mb-2"><span class="badge ${GROUP_BADGES[g]}">${g}</span><span class="private-data">${Utils.fmtMoney(amt)} (${pct.toFixed(0)}%)</span></div>
+                    <div class="progress-track"><div class="progress-fill bg-primary" style="width:${pct}%"></div></div>
+                </div>`;
+            }).join('');
+
+        const months = Utils.lastNMonthKeys(12);
+        const monthlySpent = months.map(key =>
+            Math.abs(Store.state.transactions.filter(t => t.type === 'expense' && Utils.monthKey(t.date) === key).reduce((s, t) => s + t.amount, 0)));
+        const maxSpent = Math.max(...monthlySpent, 1);
+        const curKey = Utils.monthKey(Utils.todayStr());
+        $('trendChart').innerHTML = months.map((key, i) =>
+            this.chartBar(monthlySpent[i], maxSpent, Utils.monthLabel(key), key === curKey ? 'green' : '')).join('');
+
+        const byCat = {};
+        txs.filter(t => t.type === 'expense').forEach(t => {
+            if (t.splits) t.splits.forEach(s => {
+                const n = Store.categoryName(s.categoryId);
+                byCat[n] = Utils.roundMoney((byCat[n] || 0) + s.amount);
+            });
+            else {
+                const n = Store.categoryName(t.category);
+                byCat[n] = Utils.roundMoney((byCat[n] || 0) + Math.abs(t.amount));
+            }
+        });
+        const catRows = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+        const catMax = catRows.length ? catRows[0][1] : 1;
+        $('categoryBreakdown').innerHTML = catRows.length === 0
+            ? '<div class="empty-state">No expenses in this period.</div>'
+            : catRows.map(([name, amt]) => `<div class="mb-4">
+                <div class="flex flex-between text-sm mb-2"><span>${Utils.escapeHtml(name)}</span><span class="private-data">${Utils.fmtMoney(amt)}</span></div>
+                <div class="progress-track"><div class="progress-fill bg-primary" style="width:${(amt/catMax)*100}%"></div></div>
+            </div>`).join('');
+
+        const today = new Date();
+        const weeks = [];
+        for (let i = 7; i >= 0; i--) {
+            const dow = (today.getDay() + 6) % 7;
+            const mon = new Date(today.getFullYear(), today.getMonth(), today.getDate() - dow - i * 7);
+            const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+            weeks.push({ from: Utils.toISO(mon), to: Utils.toISO(sun) });
+        }
+        const weekly = weeks.map(w =>
+            Math.abs(Store.state.transactions.filter(t => t.type === 'expense' && Utils.inRange(t.date, w.from, w.to)).reduce((s, t) => s + t.amount, 0)));
+        const maxWeekly = Math.max(...weekly, 1);
+        $('weeklyChart').innerHTML = weekly.map((amt, i) =>
+            this.chartBar(amt, maxWeekly, `W${i + 1}`, i === 7 ? 'green' : '')).join('');
+
+        const curNet = Store.netWorth();
+        const history = months.map(key => {
+            const end = Utils.monthEnd(key);
+            return Utils.roundMoney(curNet - Store.state.transactions.filter(t => t.date > end).reduce((s, t) => s + t.amount, 0));
+        });
+        const minH = Math.min(...history, 0), maxH = Math.max(...history, 1);
+        const span = maxH - minH || 1;
+        $('balanceHistoryChart').innerHTML = history.map((val, i) => {
+            const pct = Math.max(((val - minH) / span) * 100, 1.5);
+            return `<div class="chart-col ${val >= 0 ? 'green' : ''}" style="height:${pct}%" title="${Utils.monthLabel(months[i])}: ${Utils.fmtMoney(val)}"><div class="chart-label">${Utils.monthLabel(months[i])}</div></div>`;
+        }).join('');
+    },
+
+    /* ---------- RECURRING ---------- */
+renderRecurring() {
+    const $ = this.$;
+    $('recurringList').innerHTML = Store.state.recurring.length === 0
+            ? '<div class="empty-state">No recurring rules yet. Click "+ Add Recurring" to automate bills, salary, and transfers.</div>'
+            : Store.state.recurring.map(r => {
+                const next = r.active ? Store.nextDueDate(r) : null;
+                const overdue = next && next <= Utils.todayStr();
+                return `<div class="recurring-card">
+                    <div class="flex flex-between flex-wrap gap-2">
+                        <div>
+                            <div style="font-weight:600;">
+                                ${r.active ? '' : '⏸ '}
+                                ${Utils.escapeHtml(r.desc)}
+                                <span class="badge ${r.type === 'income' ? 'badge-savings2' : 'badge-needs'}">${r.type}</span>
+                            </div>
+                            <div class="text-xs mt-2">
+                                ${Utils.fmtMoney(r.amount)} · ${Utils.escapeHtml(r.frequency)}${r.frequency === 'monthly' ? ` (day ${r.day})` : ''} ·
+                                ${r.type === 'transfer'
+                                    ? `${Utils.escapeHtml(Store.accountName(r.accountId))} → ${Utils.escapeHtml(Store.accountName(r.transferTo))}`
+                                    : Utils.escapeHtml(Store.accountName(r.accountId))}
+                                ${r.category ? ' · ' + Utils.escapeHtml(Store.categoryName(r.category)) : ''}
+                            </div>
+                            <div class="text-xs">Starts ${Utils.fmtDate(r.startDate)}${r.lastProcessed ? ` · last processed ${Utils.fmtDate(r.lastProcessed)}` : ''}</div>
+                            ${next ? `<div class="text-xs ${overdue ? 'text-danger' : ''}">Next due: ${Utils.fmtDate(next)}</div>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn btn-outline btn-sm" data-toggle-rec="${r.id}">${r.active ? 'Pause' : 'Resume'}</button>
+                            <button class="btn btn-outline btn-sm" data-edit-rec="${r.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm" data-del-rec="${r.id}">Delete</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+    },
+
+    /* ---------- COMPARE ---------- */
+    runComparison() {
+        const $ = this.$;
+        const p1 = { from: $('compare1From').value, to: $('compare1To').value };
+        const p2 = { from: $('compare2From').value, to: $('compare2To').value };
+        if (!p1.from || !p1.to || !p2.from || !p2.to) { Toast.show('Please set both date ranges.', { isError: true }); return; }
+        if (p1.from > p1.to || p2.from > p2.to) { Toast.show('Each period\'s start must be before its end.', { isError: true }); return; }
+
+        const stats = p => {
+            const txs = Store.state.transactions.filter(t => Utils.inRange(t.date, p.from, p.to));
+            const t = this.totals(txs);
+            const byCat = {};
+            txs.filter(x => x.type === 'expense').forEach(x => {
+                if (x.splits) x.splits.forEach(s => {
+                    const n = Store.categoryName(s.categoryId);
+                    byCat[n] = Utils.roundMoney((byCat[n] || 0) + s.amount);
+                });
+                else {
+                    const n = Store.categoryName(x.category);
+                    byCat[n] = Utils.roundMoney((byCat[n] || 0) + Math.abs(x.amount));
+                }
+            });
+            return { ...t, count: txs.length, topCats: Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 5) };
+        };
+        const s1 = stats(p1), s2 = stats(p2);
+        const delta = (a, b) => {
+            if (b === 0) return a === 0 ? '—' : 'new';
+            const pct = ((a - b) / Math.abs(b)) * 100;
+            return `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`;
+        };
+        const row = (label, a, b, fmt = v => Utils.fmtMoney(v), cls = '') =>
+            `<tr><td>${label}</td><td class="${cls} private-data">${fmt(a)}</td><td class="${cls} private-data">${fmt(b)}</td><td class="private-data">${delta(a, b)}</td></tr>`;
+
+        $('comparisonResults').innerHTML = `
+            <div class="card">
+                <h3 class="mb-4">Comparison Results</h3>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Metric</th><th>${Utils.fmtDate(p1.from)} – ${Utils.fmtDate(p1.to)}</th><th>${Utils.fmtDate(p2.from)} – ${Utils.fmtDate(p2.to)}</th><th>Change</th></tr></thead>
+                        <tbody>
+                            ${row('Transactions', s1.count, s2.count, v => v)}
+                            ${row('Income', s1.income, s2.income, null, 'text-success')}
+                            ${row('Spent', s1.spent, s2.spent, null, 'text-danger')}
+                            ${row('Net', s1.net, s2.net, null, s1.net >= 0 ? 'text-success' : 'text-danger')}
+                            ${row('Savings Rate', s1.savingsRate, s2.savingsRate, v => v + '%')}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid grid-2 mt-4">
+                    <div><h4>Top Categories — Period 1</h4>${s1.topCats.length ? s1.topCats.map(([n, v]) => `<div class="flex flex-between text-sm mt-2"><span>${Utils.escapeHtml(n)}</span><span class="private-data">${Utils.fmtMoney(v)}</span></div>`).join('') : '<div class="text-sm mt-2">None</div>'}</div>
+                    <div><h4>Top Categories — Period 2</h4>${s2.topCats.length ? s2.topCats.map(([n, v]) => `<div class="flex flex-between text-sm mt-2"><span>${Utils.escapeHtml(n)}</span><span class="private-data">${Utils.fmtMoney(v)}</span></div>`).join('') : '<div class="text-sm mt-2">None</div>'}</div>
+                </div>
+            </div>`;
+    },
+
+    /* ---------- IMPORT / EXPORT ---------- */
+    refreshImportOptions() {
+        this.$('importCsvAccount').innerHTML = Store.state.accounts.map(a =>
+            `<option value="${a.id}">${Utils.escapeHtml(a.name)}</option>`).join('');
+    },
+
+    importCSV() {
+        const file = this.$('importCsvFile').files[0];
+        if (!file) { Toast.show('Choose a CSV file first.', { isError: true }); return; }
+        const defaultAccount = this.$('importCsvAccount').value;
+        if (!defaultAccount) { Toast.show('Add an account first.', { isError: true }); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const rows = Utils.parseCSV(reader.result);
+                if (rows.length === 0) throw new Error('Empty file');
+                // Detect header
+                const first = rows[0].map(c => c.trim().toLowerCase());
+                const hasHeader = first.includes('date') || first.includes('description') || first.includes('amount');
+                const header = hasHeader ? first : ['date','description','amount','type','account','category'];
+                const dataRows = hasHeader ? rows.slice(1) : rows;
+                const col = name => header.indexOf(name);
+
+                // Account name → id map
+                const accByName = {};
+                Store.state.accounts.forEach(a => accByName[a.name.toLowerCase()] = a.id);
+                const catByName = {};
+                Store.state.categories.forEach(c => catByName[c.name.toLowerCase()] = c.id);
+
+                let imported = 0, skipped = 0;
+                dataRows.forEach(r => {
+                    const date = Utils.parseFlexibleDate(r[col('date')]);
+                    const amount = Utils.parseAmount(r[col('amount')]);
+                    const desc = Validators.sanitizeString(r[col('description')] || r[col('desc')] || 'Imported', 200);
+                    if (!date || !Validators.isValidAmount(Math.abs(amount)) || !desc) { skipped++; return; }
+                    const accCell = (r[col('account')] || '').trim().toLowerCase();
+                    let accountId = accByName[accCell] || defaultAccount;
+                    const typeCell = (r[col('type')] || '').trim().toLowerCase();
+                    const type = typeCell === 'income' || amount > 0 ? 'income' : 'expense';
+                    const catCell = (r[col('category')] || '').trim().toLowerCase();
+                    const category = type === 'expense' ? (catByName[catCell] || null) : null;
+                    Store.applyTransaction({ type, amount: Math.abs(amount), date, desc, accountId, category, recurring: false, reconciled: false });
+                    imported++;
+                });
+
+                Store.recalcBalances();
+                Store.save(['all']);
+                this.$('importCsvResult').innerHTML = `<span class="text-success">Imported ${imported} transaction(s).</span>${skipped ? ` <span class="text-danger">Skipped ${skipped} invalid row(s).</span>` : ''}`;
+                Toast.show(`Imported ${imported} transaction(s).`, { actionLabel: 'Undo', onAction: () => Store.undo() });
+            } catch (e) {
+                console.error(e);
+                Toast.show('Import failed: ' + e.message, { isError: true });
+            }
+        };
+        reader.readAsText(file);
+    },
+
+    exportTransactionsCSV(txs, name) {
+        const header = ['Date','Description','Account','Category','Type','Amount','Reconciled','Recurring'];
+        const rows = txs.map(t => [
+            t.date, t.desc, Store.accountName(t.accountId),
+            t.type === 'expense' ? (t.splits ? `Split (${t.splits.length})` : Store.categoryName(t.category)) : (t.type === 'income' ? 'Income' : 'Transfer'),
+            t.type, t.amount.toFixed(2), t.reconciled ? 'yes' : 'no', t.recurring ? 'yes' : 'no'
+        ]);
+        const csv = [header, ...rows].map(r => r.map(Utils.csvField).join(',')).join('\r\n');
+        Utils.download(`${name}_${Utils.todayStr()}.csv`, csv, 'text/csv');
+        Toast.show('CSV exported.');
+    },
+
+    exportAccountsCSV() {
+        const header = ['Name','Type','Institution','Opening Balance','Current Balance','Goal Balance','Low Balance Threshold'];
+        const rows = Store.state.accounts.map(a => [
+            a.name, a.type, a.institution, a.openingBalance.toFixed(2), a.balance.toFixed(2),
+            a.goalBalance != null ? a.goalBalance.toFixed(2) : '',
+            a.lowBalanceThreshold != null ? a.lowBalanceThreshold.toFixed(2) : ''
+        ]);
+        const csv = [header, ...rows].map(r => r.map(Utils.csvField).join(',')).join('\r\n');
+        Utils.download(`accounts_${Utils.todayStr()}.csv`, csv, 'text/csv');
+        Toast.show('Accounts exported.');
+    },
+
+    exportMonthlyReport() {
+        const header = ['Month','Income','Spent','Net','Savings Rate %'];
+        const rows = Utils.lastNMonthKeys(12).map(key => {
+            const t = this.totals(Store.state.transactions.filter(x => Utils.monthKey(x.date) === key));
+            return [key, t.income.toFixed(2), t.spent.toFixed(2), t.net.toFixed(2), t.savingsRate];
+        });
+        const csv = [header, ...rows].map(r => r.map(Utils.csvField).join(',')).join('\r\n');
+        Utils.download(`monthly_report_${Utils.todayStr()}.csv`, csv, 'text/csv');
+        Toast.show('Monthly report exported.');
+    }
+};
+
+// Small helper used by the upcoming card (30-day horizon)
+Utils.addDaysISO = (iso, n) => { const d = Utils.parseDate(iso); d.setDate(d.getDate() + n); return Utils.toISO(d); };
+
+App.init();
+</script>
+</body>
+</html>
