@@ -1,4 +1,4 @@
-const CACHE = 'zenbudget-v2';
+const CACHE = 'zenbudget-v3';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', e => {
